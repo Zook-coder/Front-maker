@@ -1,3 +1,4 @@
+import WebSocketProvider from '@/websockets/WebSocketProvider';
 import type { Metadata } from 'next';
 import './globals.css';
 
@@ -13,7 +14,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <WebSocketProvider>{children}</WebSocketProvider>
+      </body>
     </html>
   );
 }
