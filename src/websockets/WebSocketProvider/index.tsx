@@ -29,7 +29,7 @@ const WebSocketProvider = ({ children }: PropsWithChildren) => {
 
   const connectWebSocketClient = useCallback(() => {
     const ws = new WebSocket(
-      process.env.NEXT_PUBLIC_WEBSOCKET_URL ?? 'ws://localhost:3000/',
+      process.env.NEXT_PUBLIC_WEBSOCKET_URL ?? 'ws://localhost:3000',
     );
     setSocket(ws);
 

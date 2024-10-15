@@ -8,11 +8,8 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { useWebSocket } from '@/websockets/WebSocketProvider';
 
 export default function Home() {
-  const { socket } = useWebSocket();
-
   return (
     <div className="flex items-center justify-center h-screen">
       <Card>
