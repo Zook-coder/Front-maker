@@ -1,4 +1,5 @@
 'use client';
+import { GameState } from '@/models/gamestate';
 import {
   createContext,
   PropsWithChildren,
@@ -10,10 +11,18 @@ import io, { Socket } from 'socket.io-client';
 
 interface Context {
   socket?: Socket;
+  gameState: GameState;
 }
+
+const INITIAL_STATE: GameState = {
+  status: 'LOBBY',
+  loops: 0,
+  timer: 0,
+};
 
 const WebSocketContext = createContext<Context>({
   socket: undefined,
+  gameState: INITIAL_STATE,
 });
 
 export const useWebSocket = () => {
@@ -25,6 +34,7 @@ export const useWebSocket = () => {
 };
 
 const WebSocketProvider = ({ children }: PropsWithChildren) => {
+  const [gameState, setGameState] = useState<GameState>(INITIAL_STATE);
   const [socket, setSocket] = useState<Socket>();
 
   const connectWebSocketClient = () => {
@@ -43,6 +53,11 @@ const WebSocketProvider = ({ children }: PropsWithChildren) => {
       console.log(message);
     });
 
+    socket.on('gamestate', (message) => {
+      const state: GameState = JSON.parse(message);
+      setGameState(state);
+    });
+
     socket.io.on('close', () => {
       console.log('disconnected!');
     });
@@ -58,7 +73,7 @@ const WebSocketProvider = ({ children }: PropsWithChildren) => {
   }, []);
 
   return (
-    <WebSocketContext.Provider value={{ socket }}>
+    <WebSocketContext.Provider value={{ socket, gameState }}>
       {children}
     </WebSocketContext.Provider>
   );
