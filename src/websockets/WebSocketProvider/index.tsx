@@ -33,6 +33,11 @@ const WebSocketProvider = ({ children }: PropsWithChildren) => {
     );
     setSocket(ws);
 
+    ws.onmessage = (e) => {
+      const data = JSON.parse((e.data as Buffer).toString());
+      console.log(data);
+    };
+
     ws.onclose = () => {
       console.log('Connexion perdue... Tentative de reconnexion.');
       setTimeout(() => {

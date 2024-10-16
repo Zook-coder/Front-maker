@@ -8,13 +8,25 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { useWebSocket } from '@/websockets/WebSocketProvider';
+import { useState } from 'react';
 
 export default function Home() {
+  const { socket } = useWebSocket();
+  const [text, setText] = useState('');
+
   return (
     <div className="flex items-center justify-center h-screen">
       <Card>
         <CardHeader>
           <CardTitle>Envoyer un message</CardTitle>
+          <Input
+            onChange={(e) => {
+              setText(e.target.value);
+            }}
+            placeholder="Envoyer un message"
+          />
           <CardDescription>
             Lorem ipsum dolor sit amet consectetur, adipisicing elit. Similique,
             praesentium?
@@ -22,10 +34,15 @@ export default function Home() {
         </CardHeader>
         <CardContent></CardContent>
         <CardFooter>
-          <Button>Envoyer</Button>
+          <Button
+            onClick={() => {
+              socket?.send(text);
+            }}
+          >
+            Envoyer
+          </Button>
         </CardFooter>
       </Card>
-      <Card></Card>
     </div>
   );
 }
