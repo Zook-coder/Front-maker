@@ -63,8 +63,8 @@ const WebSocketProvider = ({ children }: PropsWithChildren) => {
     });
 
     socket.on('newplayer', (message) => {
-      const player: Player = JSON.parse(message);
-      setPlayers([...players, player]);
+      const players: Player[] = JSON.parse(message);
+      setPlayers(players);
     });
 
     socket.io.on('close', () => {
