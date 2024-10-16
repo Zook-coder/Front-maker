@@ -2,14 +2,14 @@
 import {
   createContext,
   PropsWithChildren,
-  useCallback,
   useContext,
   useEffect,
   useState,
 } from 'react';
+import io, { Socket } from 'socket.io-client';
 
 interface Context {
-  socket?: WebSocket;
+  socket?: Socket;
 }
 
 const WebSocketContext = createContext<Context>({
@@ -25,39 +25,37 @@ export const useWebSocket = () => {
 };
 
 const WebSocketProvider = ({ children }: PropsWithChildren) => {
-  const [socket, setSocket] = useState<WebSocket>();
+  const [socket, setSocket] = useState<Socket>();
 
-  const connectWebSocketClient = useCallback(() => {
-    const ws = new WebSocket(
-      process.env.NEXT_PUBLIC_WEBSOCKET_URL ?? 'ws://localhost:3000',
+  const connectWebSocketClient = () => {
+    const socket = io(
+      process.env.NEXT_PUBLIC_WEBSOCKET_URL ?? 'http://localhost:3001',
+      {
+        reconnectionDelay: 5000,
+      },
     );
-    setSocket(ws);
 
-    ws.onmessage = (e) => {
-      const data = JSON.parse((e.data as Buffer).toString());
-      console.log(data);
-    };
-
-    ws.onclose = () => {
-      console.log('Connexion perdue... Tentative de reconnexion.');
-      setTimeout(() => {
-        connectWebSocketClient();
-      }, 5000);
-    };
-
-    ws.onopen = () => {
+    socket.io.on('open', () => {
       console.log('Connected!');
-    };
+    });
 
-    setSocket(ws);
-  }, []);
+    socket.on('message', (message) => {
+      console.log(message);
+    });
+
+    socket.io.on('close', () => {
+      console.log('disconnected!');
+    });
+
+    setSocket(socket);
+  };
 
   useEffect(() => {
     connectWebSocketClient();
     return () => {
       if (socket) socket.close();
     };
-  }, [connectWebSocketClient]);
+  }, []);
 
   return (
     <WebSocketContext.Provider value={{ socket }}>

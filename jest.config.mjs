@@ -36,6 +36,9 @@ const config = {
     // Disable server-only
     'server-only': `<rootDir>/__mocks__/empty.js`,
   },
+  setupFilesAfterEnv: [
+    './src/testing/jest.setup.ts',
+  ],
   // Add more setup options before each test is run
   // setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
   testPathIgnorePatterns: ['<rootDir>/node_modules/', '<rootDir>/.next/'],
