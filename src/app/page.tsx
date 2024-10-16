@@ -1,4 +1,5 @@
 'use client';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -13,9 +14,10 @@ import { useWebSocket } from '@/websockets/WebSocketProvider';
 import { useState } from 'react';
 
 export default function Home() {
-  const { socket, gameState } = useWebSocket();
-  const [text, setText] = useState('');
+  const { socket, players } = useWebSocket();
+  const [username, setUsername] = useState('');
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const convertElapsedTime = (seconds: number) => {
     seconds = Math.trunc(seconds);
     const minutes = Math.floor(seconds / 60);
@@ -26,38 +28,68 @@ export default function Home() {
   };
 
   return (
-    <div className="flex items-center justify-center h-screen">
+    <div className="relative flex items-center justify-center h-screen">
       <Card>
         <CardHeader>
-          <CardTitle>Envoyer un message</CardTitle>
+          <CardTitle>Choisir votre pseudo</CardTitle>
           <CardDescription>
-            Lorem ipsum dolor sit amet consectetur, adipisicing elit. Similique,
-            praesentium?
+            Ce pseudo fera office de nom {"d'affichage"} lors de la partie.
           </CardDescription>
         </CardHeader>
         <CardContent>
           <Input
             onChange={(e) => {
-              setText(e.target.value);
+              setUsername(e.target.value);
             }}
-            placeholder="Envoyer un message"
+            placeholder="Boucle d'or"
           />
         </CardContent>
         <CardFooter>
           <Button
             onClick={() => {
-              socket?.send(text);
+              socket?.emit(
+                'signup',
+                JSON.stringify({
+                  name: username,
+                  type: 'WEB',
+                }),
+              );
             }}
           >
             Envoyer
           </Button>
         </CardFooter>
       </Card>
-      <Card>
+      <Card className="absolute right-0 h-full pr-0">
         <CardHeader>
-          <CardTitle>Temps de jeu</CardTitle>
+          <CardTitle>Joueur connectés</CardTitle>
+          <CardDescription>Lorem ipsum dolor sit amet.</CardDescription>
         </CardHeader>
-        <CardContent>{convertElapsedTime(gameState.timer)}</CardContent>
+        <CardContent>
+          <div className="flex flex-col gap-4">
+            {players.map((player) => (
+              <Card
+                key={player.name}
+                className="w-full flex items-center gap-12 border-none border-transparent shadow-none"
+              >
+                <div className="flex items-center gap-4">
+                  <Avatar>
+                    <AvatarFallback>
+                      {player.name.charAt(0).toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                  <CardContent className="p-0">
+                    <span className="font-medium leading-none tracking-tight">
+                      {player.name}
+                    </span>
+                    <CardDescription>Lorem, ipsum dolor.</CardDescription>
+                  </CardContent>
+                </div>
+                <Button className="h-8">Vous</Button>
+              </Card>
+            ))}
+          </div>
+        </CardContent>
       </Card>
     </div>
   );

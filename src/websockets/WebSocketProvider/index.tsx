@@ -1,5 +1,6 @@
 'use client';
 import { GameState } from '@/models/gamestate';
+import { Player } from '@/models/player';
 import {
   createContext,
   PropsWithChildren,
@@ -12,6 +13,7 @@ import io, { Socket } from 'socket.io-client';
 interface Context {
   socket?: Socket;
   gameState: GameState;
+  players: Player[];
 }
 
 const INITIAL_STATE: GameState = {
@@ -23,6 +25,7 @@ const INITIAL_STATE: GameState = {
 const WebSocketContext = createContext<Context>({
   socket: undefined,
   gameState: INITIAL_STATE,
+  players: [],
 });
 
 export const useWebSocket = () => {
@@ -36,6 +39,7 @@ export const useWebSocket = () => {
 const WebSocketProvider = ({ children }: PropsWithChildren) => {
   const [gameState, setGameState] = useState<GameState>(INITIAL_STATE);
   const [socket, setSocket] = useState<Socket>();
+  const [players, setPlayers] = useState<Player[]>([]);
 
   const connectWebSocketClient = () => {
     const socket = io(
@@ -58,6 +62,11 @@ const WebSocketProvider = ({ children }: PropsWithChildren) => {
       setGameState(state);
     });
 
+    socket.on('newplayer', (message) => {
+      const player: Player = JSON.parse(message);
+      setPlayers([...players, player]);
+    });
+
     socket.io.on('close', () => {
       console.log('disconnected!');
     });
@@ -73,7 +82,7 @@ const WebSocketProvider = ({ children }: PropsWithChildren) => {
   }, []);
 
   return (
-    <WebSocketContext.Provider value={{ socket, gameState }}>
+    <WebSocketContext.Provider value={{ socket, gameState, players }}>
       {children}
     </WebSocketContext.Provider>
   );
