@@ -98,7 +98,14 @@ const WebSocketProvider = ({ children }: PropsWithChildren) => {
 
   return (
     <WebSocketContext.Provider
-      value={{ socket, gameState, player, players, isLoading, setLoading }}
+      value={{
+        socket,
+        gameState,
+        player,
+        players,
+        isLoading,
+        setLoading,
+      }}
     >
       {children}
     </WebSocketContext.Provider>
