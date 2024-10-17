@@ -85,8 +85,6 @@ const WebSocketProvider = ({ children }: PropsWithChildren) => {
         return;
       }
 
-      console.log('Find player ID!');
-
       socket?.emit('whoami', JSON.stringify({ id: playerId }));
     });
 
@@ -94,6 +92,12 @@ const WebSocketProvider = ({ children }: PropsWithChildren) => {
       const gameError: GameError = JSON.parse(message);
       try {
         const error = KNOWN_ERRORS[gameError.type];
+
+        if (gameError.type === 'UNKNOWN_PLAYER') {
+          localStorage.removeItem('playerId');
+          return;
+        }
+
         if (error) {
           toast({
             title: 'Oops..',
@@ -155,6 +159,11 @@ const WebSocketProvider = ({ children }: PropsWithChildren) => {
     socket.on('newplayer', (message) => {
       const players: Player[] = JSON.parse(message);
       const newPlayer = players[players.length - 1];
+      setPlayers(players);
+
+      if (players.length === 0) {
+        return;
+      }
 
       if (newPlayer.id === player?.id) {
         return;
@@ -164,8 +173,6 @@ const WebSocketProvider = ({ children }: PropsWithChildren) => {
         title: 'Un nouvel arrivant !',
         description: `${newPlayer.name} a rejoint la partie`,
       });
-
-      setPlayers(players);
     });
 
     socket.io.on('close', () => {
