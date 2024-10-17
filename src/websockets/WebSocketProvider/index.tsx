@@ -18,9 +18,7 @@ interface Context {
   players: Player[];
   player?: Player;
   isLoading: boolean;
-  isQuitting: boolean;
   setLoading: Dispatch<SetStateAction<boolean>>;
-  setQuitting: Dispatch<SetStateAction<boolean>>;
 }
 
 const INITIAL_STATE: GameState = {
@@ -34,9 +32,7 @@ const WebSocketContext = createContext<Context>({
   gameState: INITIAL_STATE,
   players: [],
   isLoading: false,
-  isQuitting: false,
   setLoading: () => {},
-  setQuitting: () => {},
 });
 
 export const useWebSocket = () => {
@@ -52,7 +48,6 @@ const WebSocketProvider = ({ children }: PropsWithChildren) => {
   const [socket, setSocket] = useState<Socket>();
   const [players, setPlayers] = useState<Player[]>([]);
   const [isLoading, setLoading] = useState(false);
-  const [isQuitting, setQuitting] = useState(false);
   const [player, setPlayer] = useState<Player>();
 
   const connectWebSocketClient = () => {
@@ -87,12 +82,6 @@ const WebSocketProvider = ({ children }: PropsWithChildren) => {
       setLoading(false);
     });
 
-    socket.on('quitting', (message) => {
-      const playerQuitting: Player = JSON.parse(message);
-      playerQuitting.quitting = true;
-      setQuitting(true);
-    });
-
     socket.io.on('close', () => {
       console.log('disconnected!');
     });
@@ -116,8 +105,6 @@ const WebSocketProvider = ({ children }: PropsWithChildren) => {
         players,
         isLoading,
         setLoading,
-        isQuitting,
-        setQuitting,
       }}
     >
       {children}

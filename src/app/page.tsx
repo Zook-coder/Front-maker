@@ -59,18 +59,18 @@ export default function Home() {
               setLoading(true);
             }}
             disabled={
-              players.some((item) => item.name === player?.name) || isLoading
+              players.some((item) => item.id === player?.id) || isLoading
             }
           >
             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Envoyer
           </Button>
-          {isLoading ? null : (
+          {players.some((item) => item.name === player?.name) && (
             <Button
               variant="destructive"
               onClick={() => {
                 socket?.emit(
-                  'quitting',
+                  'logout',
                   JSON.stringify({
                     id: player?.id,
                   }),
