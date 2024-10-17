@@ -46,7 +46,7 @@ export default function Home() {
             disabled={players.some((item) => item.name === player?.name)}
           />
         </CardContent>
-        <CardFooter>
+        <CardFooter className="flex gap-3">
           <Button
             onClick={() => {
               socket?.emit(
@@ -65,6 +65,21 @@ export default function Home() {
             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Envoyer
           </Button>
+          {isLoading ? null : (
+            <Button
+              variant="destructive"
+              onClick={() => {
+                socket?.emit(
+                  'quitting',
+                  JSON.stringify({
+                    id: player?.id,
+                  }),
+                );
+              }}
+            >
+              Quitter
+            </Button>
+          )}
         </CardFooter>
       </Card>
       <Card className="absolute right-0 h-full pr-0">
