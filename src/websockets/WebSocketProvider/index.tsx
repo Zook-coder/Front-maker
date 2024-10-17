@@ -1,6 +1,9 @@
 'use client';
+import { GameError, KNOWN_ERRORS } from '@/api/gameerror';
 import { GameState } from '@/api/gamestate';
 import { Player } from '@/api/player';
+import { Query, QueryStatus } from '@/api/query';
+import { useToast } from '@/hooks/use-toast';
 import {
   createContext,
   Dispatch,
@@ -17,8 +20,8 @@ interface Context {
   gameState: GameState;
   players: Player[];
   player?: Player;
-  isLoading: boolean;
-  setLoading: Dispatch<SetStateAction<boolean>>;
+  queries: Record<Query, QueryStatus>;
+  setQueries: Dispatch<SetStateAction<Record<Query, QueryStatus>>>;
 }
 
 const INITIAL_STATE: GameState = {
@@ -31,8 +34,15 @@ const WebSocketContext = createContext<Context>({
   socket: undefined,
   gameState: INITIAL_STATE,
   players: [],
-  isLoading: false,
-  setLoading: () => {},
+  setQueries: () => {},
+  queries: {
+    signup: {
+      loading: false,
+    },
+    players: {
+      loading: false,
+    },
+  },
 });
 
 export const useWebSocket = () => {
@@ -47,8 +57,16 @@ const WebSocketProvider = ({ children }: PropsWithChildren) => {
   const [gameState, setGameState] = useState<GameState>(INITIAL_STATE);
   const [socket, setSocket] = useState<Socket>();
   const [players, setPlayers] = useState<Player[]>([]);
-  const [isLoading, setLoading] = useState(false);
   const [player, setPlayer] = useState<Player>();
+  const { toast } = useToast();
+  const [queries, setQueries] = useState<Record<Query, QueryStatus>>({
+    signup: {
+      loading: false,
+    },
+    players: {
+      loading: false,
+    },
+  });
 
   const connectWebSocketClient = () => {
     const socket = io(
@@ -60,10 +78,42 @@ const WebSocketProvider = ({ children }: PropsWithChildren) => {
 
     socket.io.on('open', () => {
       console.log('Connected!');
+
+      const playerId = localStorage.getItem('playerId');
+
+      if (!playerId) {
+        return;
+      }
+
+      console.log('Find player ID!');
+
+      socket?.emit('whoami', JSON.stringify({ id: playerId }));
     });
 
-    socket.on('message', (message) => {
-      console.log(message);
+    socket.on('error', (message) => {
+      const gameError: GameError = JSON.parse(message);
+      try {
+        const error = KNOWN_ERRORS[gameError.type];
+        if (error) {
+          toast({
+            title: 'Oops..',
+            description: error,
+            variant: 'destructive',
+          });
+        } else {
+          toast({
+            title: 'Oops..',
+            description: 'Une erreur est survenue.',
+            variant: 'destructive',
+          });
+        }
+      } catch {
+        toast({
+          title: 'Oops..',
+          description: 'Une erreur est survenue.',
+          variant: 'destructive',
+        });
+      }
     });
 
     socket.on('gamestate', (message) => {
@@ -74,12 +124,48 @@ const WebSocketProvider = ({ children }: PropsWithChildren) => {
     socket.on('signupsuccess', (message) => {
       const player: Player = JSON.parse(message);
       setPlayer(player);
+      localStorage.setItem('playerId', player.id);
+      setQueries({
+        ...queries,
+        signup: {
+          loading: false,
+        },
+      });
+    });
+
+    socket.on('signupfailed', () => {
+      setQueries({
+        ...queries,
+        signup: {
+          loading: false,
+        },
+      });
+    });
+
+    socket.on('lobbyplayers', (message) => {
+      const players: Player[] = JSON.parse(message);
+      setPlayers(players);
+    });
+
+    socket.on('playerInfo', (message) => {
+      const player: Player = JSON.parse(message);
+      setPlayer(player);
     });
 
     socket.on('newplayer', (message) => {
       const players: Player[] = JSON.parse(message);
+      const newPlayer = players[players.length - 1];
+
+      if (newPlayer.id === player?.id) {
+        return;
+      }
+
+      toast({
+        title: 'Un nouvel arrivant !',
+        description: `${newPlayer.name} a rejoint la partie`,
+      });
+
       setPlayers(players);
-      setLoading(false);
     });
 
     socket.io.on('close', () => {
@@ -98,14 +184,7 @@ const WebSocketProvider = ({ children }: PropsWithChildren) => {
 
   return (
     <WebSocketContext.Provider
-      value={{
-        socket,
-        gameState,
-        player,
-        players,
-        isLoading,
-        setLoading,
-      }}
+      value={{ socket, gameState, player, players, queries, setQueries }}
     >
       {children}
     </WebSocketContext.Provider>

@@ -15,7 +15,7 @@ import { Loader2 } from 'lucide-react';
 import { useState } from 'react';
 
 export default function Home() {
-  const { socket, player, players, isLoading, setLoading } = useWebSocket();
+  const { socket, players, player, queries, setQueries } = useWebSocket();
   const [username, setUsername] = useState('');
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -42,8 +42,8 @@ export default function Home() {
             onChange={(e) => {
               setUsername(e.target.value);
             }}
-            placeholder="Boucle d'or"
-            disabled={players.some((item) => item.name === player?.name)}
+            placeholder={player?.name ?? "Boucle d'or"}
+            disabled={players.some((item) => item.id === player?.id)}
           />
         </CardContent>
         <CardFooter className="flex gap-3">
@@ -56,13 +56,21 @@ export default function Home() {
                   type: 'WEB',
                 }),
               );
-              setLoading(true);
+              setQueries({
+                ...queries,
+                signup: {
+                  loading: true,
+                },
+              });
             }}
             disabled={
-              players.some((item) => item.id === player?.id) || isLoading
+              players.some((item) => item.id === player?.id) ||
+              queries.signup.loading
             }
           >
-            {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            {queries.signup.loading && (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            )}
             Envoyer
           </Button>
           {players.some((item) => item.name === player?.name) && (

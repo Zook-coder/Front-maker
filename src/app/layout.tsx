@@ -1,3 +1,4 @@
+import { Toaster } from '@/components/ui/toaster';
 import WebSocketProvider from '@/websockets/WebSocketProvider';
 import type { Metadata } from 'next';
 import './globals.css';
@@ -16,6 +17,7 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <WebSocketProvider>{children}</WebSocketProvider>
+        <Toaster />
       </body>
     </html>
   );
