@@ -175,6 +175,32 @@ const WebSocketProvider = ({ children }: PropsWithChildren) => {
       });
     });
 
+    socket.on('logoutplayer', (message) => {
+      const {
+        players,
+        logoutPlayerId,
+      }: { players: Player[]; logoutPlayerId: string } = JSON.parse(message);
+
+      const logoutPlayer = players.find(
+        (player) => player.id == logoutPlayerId,
+      );
+
+      setPlayers(players);
+
+      if (!logoutPlayer) {
+        return;
+      }
+
+      if (logoutPlayer.id === player?.id) {
+        return;
+      }
+
+      toast({
+        title: 'Un joueur a quitté la partie !',
+        description: `${logoutPlayer.name} a quitté la partie`,
+      });
+    });
+
     socket.io.on('close', () => {
       console.log('disconnected!');
     });
