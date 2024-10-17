@@ -36,7 +36,7 @@ export default [
       'eslint.config.mjs',
       '.next/**',
       '**/*.{js,mjs}',
-      "./src/components/ui/**/*.{ts, tsx}"
+      "src/components/ui/**/*.{tsx}"
     ],
   }
 ];
