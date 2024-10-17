@@ -15,9 +15,8 @@ import { Loader2 } from 'lucide-react';
 import { useState } from 'react';
 
 export default function Home() {
-  const { socket, players } = useWebSocket();
+  const { socket, player, players, isLoading, setLoading } = useWebSocket();
   const [username, setUsername] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const convertElapsedTime = (seconds: number) => {
@@ -44,7 +43,7 @@ export default function Home() {
               setUsername(e.target.value);
             }}
             placeholder="Boucle d'or"
-            disabled={players.some((item) => item.name === username)}
+            disabled={players.some((item) => item.name === player?.name)}
           />
         </CardContent>
         <CardFooter>
@@ -57,17 +56,14 @@ export default function Home() {
                   type: 'WEB',
                 }),
               );
-              setIsLoading(true);
+              setLoading(true);
             }}
             disabled={
-              players.some((item) => item.name === username) || isLoading
+              players.some((item) => item.name === player?.name) || isLoading
             }
           >
-            {isLoading ? (
-              <Loader2 className="m-2 h-4 w-4 animate-spin" />
-            ) : (
-              'Envoyer'
-            )}
+            {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            Envoyer
           </Button>
         </CardFooter>
       </Card>
@@ -80,7 +76,7 @@ export default function Home() {
           <div className="flex flex-col gap-4">
             {players.map((player) => (
               <Card
-                key={player.name}
+                key={player.id}
                 className="w-full flex items-center gap-12 border-none border-transparent shadow-none"
               >
                 <div className="flex items-center gap-4">
@@ -97,10 +93,10 @@ export default function Home() {
                   </CardContent>
                 </div>
                 <Button
-                  className="h-8"
+                  className={`h-8 ${player.type === 'WEB' ? 'text-muted-foreground' : ''}`}
                   variant={player.type == 'UNITY' ? 'default' : 'outline'}
                 >
-                  {player.type}
+                  {player.type.charAt(0) + player.type.slice(1).toLowerCase()}
                 </Button>
               </Card>
             ))}
