@@ -28,6 +28,7 @@ const INITIAL_STATE: GameState = {
   status: 'LOBBY',
   loops: 0,
   timer: 0,
+  startTimer: 0,
 };
 
 const WebSocketContext = createContext<Context>({
@@ -40,6 +41,9 @@ const WebSocketContext = createContext<Context>({
       loading: false,
     },
     players: {
+      loading: false,
+    },
+    start: {
       loading: false,
     },
   },
@@ -64,6 +68,9 @@ const WebSocketProvider = ({ children }: PropsWithChildren) => {
       loading: false,
     },
     players: {
+      loading: false,
+    },
+    start: {
       loading: false,
     },
   });
@@ -217,7 +224,14 @@ const WebSocketProvider = ({ children }: PropsWithChildren) => {
 
   return (
     <WebSocketContext.Provider
-      value={{ socket, gameState, player, players, queries, setQueries }}
+      value={{
+        socket,
+        gameState,
+        player,
+        players,
+        queries,
+        setQueries,
+      }}
     >
       {children}
     </WebSocketContext.Provider>
