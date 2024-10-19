@@ -92,7 +92,6 @@ const WebSocketProvider = ({ children }: PropsWithChildren) => {
         return;
       }
 
-      console.log('Asking to the server : Who am I ?');
       socket?.emit('whoami', JSON.stringify({ id: playerId }));
     });
 
@@ -108,24 +107,35 @@ const WebSocketProvider = ({ children }: PropsWithChildren) => {
 
         if (error) {
           toast({
-            title: 'Oops..',
+            title: 'Oops...',
             description: error,
             variant: 'destructive',
           });
         } else {
           toast({
-            title: 'Oops..',
+            title: 'Oops...',
             description: 'Une erreur est survenue.',
             variant: 'destructive',
           });
         }
       } catch {
         toast({
-          title: 'Oops..',
+          title: 'Oops...',
           description: 'Une erreur est survenue.',
           variant: 'destructive',
         });
       }
+      setQueries({
+        signup: {
+          loading: false,
+        },
+        players: {
+          loading: false,
+        },
+        start: {
+          loading: false,
+        },
+      });
     });
 
     socket.on('gamestate', (message) => {
@@ -185,26 +195,18 @@ const WebSocketProvider = ({ children }: PropsWithChildren) => {
 
     socket.on('logoutplayer', (message) => {
       const {
-        players,
-        logoutPlayerId,
-      }: { players: Player[]; logoutPlayerId: string } = JSON.parse(message);
+        players: newPlayers,
+        logoutPlayer,
+      }: { players: Player[]; logoutPlayer: Player } = JSON.parse(message);
 
-      const logoutPlayer = players.find(
-        (player) => player.id == logoutPlayerId,
-      );
-
-      setPlayers(players);
-
-      if (!logoutPlayer) {
-        return;
-      }
+      setPlayers(newPlayers);
 
       if (logoutPlayer.id === player?.id) {
         return;
       }
 
       toast({
-        title: 'Un joueur a quitté la partie !',
+        title: "Ce n'est qu'un au revoir...",
         description: `${logoutPlayer.name} a quitté la partie`,
       });
     });

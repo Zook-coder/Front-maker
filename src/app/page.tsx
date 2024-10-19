@@ -16,7 +16,7 @@ import { Loader2 } from 'lucide-react';
 import { redirect } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
-export default function Home() {
+export default function Lobby() {
   const { socket, players, player, gameState, queries, setQueries } =
     useWebSocket();
   const [username, setUsername] = useState('');

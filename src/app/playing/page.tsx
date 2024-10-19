@@ -70,7 +70,6 @@ const PlayingPage = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Fonction pour détecter le drag
   const handleDrag = (e: Konva.KonvaEventObject<MouseEvent>) => {
     setOffsetX(offsetX + e.evt.movementX);
     setOffsetY(offsetY + e.evt.movementY);
