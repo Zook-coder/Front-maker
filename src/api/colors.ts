@@ -10,7 +10,7 @@ export enum TileType {
   End = 8,
 }
 
-export const tilesColor: Record<TileType, string> = {
+export const tilesColor: Record<TileType | number, string> = {
   [TileType.Roads]: '#4b5563',
   [TileType.Walls]: '#A9A9A9',
   [TileType.Sidewalks]: '#e5e7eb',

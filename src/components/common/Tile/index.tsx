@@ -1,8 +1,6 @@
 'use client';
 import { tilesColor } from '@/api/colors';
-import { TileType } from '@/api/tile';
 import { TILE_SIZE } from '@/lib/constants';
-import { useState } from 'react';
 import { Rect } from 'react-konva';
 
 interface Props {
@@ -10,10 +8,10 @@ interface Props {
   row: number;
   col: number;
   onClick: () => void;
+  hovered: boolean;
 }
 
-const Tile = ({ id, row, col, onClick }: Props) => {
-  const [hovered, setHovered] = useState(false);
+const Tile = ({ id, row, col, hovered, onClick }: Props) => {
   return (
     <Rect
       key={`${row}-${col}`}
@@ -21,13 +19,9 @@ const Tile = ({ id, row, col, onClick }: Props) => {
       y={row * TILE_SIZE}
       width={TILE_SIZE}
       height={TILE_SIZE}
-      fill={hovered ? 'black' : (tilesColor[id as TileType] ?? 'white')}
+      fill={hovered ? 'black' : (tilesColor[id] ?? 'white')}
       stroke="#0000000d"
       onClick={onClick}
-      onMouseMove={() => {
-        setHovered(true);
-      }}
-      onMouseLeave={() => setHovered(false)}
     />
   );
 };

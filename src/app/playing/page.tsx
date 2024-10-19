@@ -40,7 +40,7 @@ import { useWebSocket } from '@/websockets/WebSocketProvider';
 import Konva from 'konva';
 import { LayoutDashboard } from 'lucide-react';
 import { redirect } from 'next/navigation';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Layer, Stage } from 'react-konva';
 
 const PlayingPage = () => {
@@ -52,6 +52,8 @@ const PlayingPage = () => {
   const [dialogOpened, setDialogOpened] = useState(false);
   const [offsetX, setOffsetX] = useState(0);
   const [offsetY, setOffsetY] = useState(0);
+  const [position, setPosition] = useState<{ x: number; y: number }>();
+  const layer = useRef(null);
 
   useEffect(() => {
     const handleResize = () => {
@@ -89,16 +91,19 @@ const PlayingPage = () => {
       <header className="flex items-center py-2 px-10 justify-between border-b">
         <div className="flex items-center gap-4">
           <Avatar>
-            <AvatarFallback>N</AvatarFallback>
+            <AvatarFallback>
+              {player?.name.charAt(0).toUpperCase()}
+            </AvatarFallback>
           </Avatar>
           <div className="flex flex-col gap-0">
             <div className="flex items-center gap-2">
               <span className="font-medium">{player?.name}</span>
             </div>
-            <span className="text-xs text-muted-foreground">Lorem, ipsum.</span>
+            <span className="text-xs text-muted-foreground">
+              {player?.role}
+            </span>
           </div>
         </div>
-        <span className="text-xl font-medium">Malfaiteur</span>
         <nav>
           <ul className="flex items-center gap-4">
             <li>
@@ -179,15 +184,35 @@ const PlayingPage = () => {
               onDragEnd={handleDrag}
               style={{ cursor: 'grab' }}
             >
-              <Layer offsetX={-offsetX} offsetY={-offsetY}>
+              <Layer
+                ref={layer}
+                offsetX={-offsetX}
+                offsetY={-offsetY}
+                onMouseMove={(e) => {
+                  if (!layer.current) {
+                    return;
+                  }
+                  const relativePosition = e.target
+                    .getStage()
+                    ?.getRelativePointerPosition();
+                  if (!relativePosition) {
+                    return;
+                  }
+                  setPosition({
+                    x: Math.trunc(relativePosition.y / 16),
+                    y: Math.trunc(relativePosition.x / 16),
+                  });
+                }}
+              >
                 {[...Array(gameState.map.length)].map((_, row) =>
-                  [...Array(gameState.map[row].length)].map((_, col) => (
+                  [...Array(gameState.map![row].length)].map((_, col) => (
                     <Tile
-                      id={gameState.map[row][col]}
+                      id={gameState.map![row][col]}
                       onClick={handleClick}
                       key={`${row}-${col}`}
                       row={row}
                       col={col}
+                      hovered={row == position?.x && col == position?.y}
                     />
                   )),
                 )}
@@ -279,7 +304,7 @@ const PlayingPage = () => {
       >
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Effectuer une action</DialogTitle>
+            <DialogTitle>Tu {"l'"} entends ce bruit ?</DialogTitle>
             <DialogDescription>
               Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quidem,
               nobis.
@@ -287,9 +312,10 @@ const PlayingPage = () => {
           </DialogHeader>
           <Select>
             <SelectTrigger>
-              <SelectValue placeholder="TENEBRES" />
+              <SelectValue placeholder="LA BETE EST LA" />
             </SelectTrigger>
             <SelectContent>
+              <SelectItem value="MALHEUR">TENEBRES</SelectItem>
               <SelectItem value="MALHEUR">MALHEUR</SelectItem>
               <SelectItem value="SMOLDÉ">SMOLDÉ</SelectItem>
             </SelectContent>

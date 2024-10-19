@@ -92,6 +92,7 @@ const WebSocketProvider = ({ children }: PropsWithChildren) => {
         return;
       }
 
+      console.log('Asking to the server : Who am I ?');
       socket?.emit('whoami', JSON.stringify({ id: playerId }));
     });
 
