@@ -51,6 +51,11 @@ const config = {
     '/node_modules/',
     '^.+\\.module\\.(css|sass|scss)$',
   ],
+  coveragePathIgnorePatterns: [
+    'node_modules',
+    '<rootDir>/src/hooks/use-toast.ts',
+    '<rootDir>/src/components/ui/.*\\.(ts|tsx)$'
+  ],
 };
 
 export default createJestConfig(config);

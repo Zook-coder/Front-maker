@@ -18,13 +18,19 @@ interface Socket {
   on(event: string, func: EventCallback<any[]>): void;
   emit: typeof emit;
   io: {
-    on: () => void;
+    on: (event: string, func: (message?: string) => void) => void;
   };
 }
 
 export const socket: Socket = {
   io: {
-    on: jest.fn(),
+    on: (event, func) => {
+      if (events[event]) {
+        events[event].push(func);
+        return;
+      }
+      events[event] = [func];
+    },
   },
   on(event, func) {
     if (events[event]) {

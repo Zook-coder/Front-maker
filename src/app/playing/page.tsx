@@ -1,5 +1,5 @@
 'use client';
-import Tile from '@/components/common/Tile';
+import { tilesColor } from '@/api/colors';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -37,11 +37,9 @@ import {
 } from '@/components/ui/sheet';
 import { convertElapsedTime } from '@/lib/utils';
 import { useWebSocket } from '@/websockets/WebSocketProvider';
-import Konva from 'konva';
 import { LayoutDashboard } from 'lucide-react';
 import { redirect } from 'next/navigation';
-import React, { useEffect, useRef, useState } from 'react';
-import { Layer, Stage } from 'react-konva';
+import React, { useEffect, useState } from 'react';
 
 const PlayingPage = () => {
   const { gameState, player } = useWebSocket();
@@ -50,10 +48,6 @@ const PlayingPage = () => {
     height: number;
   }>();
   const [dialogOpened, setDialogOpened] = useState(false);
-  const [offsetX, setOffsetX] = useState(0);
-  const [offsetY, setOffsetY] = useState(0);
-  const [position, setPosition] = useState<{ x: number; y: number }>();
-  const layer = useRef(null);
 
   useEffect(() => {
     const handleResize = () => {
@@ -69,11 +63,6 @@ const PlayingPage = () => {
 
     return () => window.removeEventListener('resize', handleResize);
   }, []);
-
-  const handleDrag = (e: Konva.KonvaEventObject<MouseEvent>) => {
-    setOffsetX(offsetX + e.evt.movementX);
-    setOffsetY(offsetY + e.evt.movementY);
-  };
 
   useEffect(() => {
     if (gameState.status !== 'PLAYING') {
@@ -177,46 +166,24 @@ const PlayingPage = () => {
       <div className="flex justify-between px-10">
         {windowsSize && gameState && gameState.map && (
           <>
-            <Stage
-              width={window.innerWidth / 1.3}
-              height={window.innerHeight}
-              onDragEnd={handleDrag}
-              style={{ cursor: 'grab' }}
-            >
-              <Layer
-                ref={layer}
-                offsetX={-offsetX}
-                offsetY={-offsetY}
-                onMouseMove={(e) => {
-                  if (!layer.current) {
-                    return;
-                  }
-                  const relativePosition = e.target
-                    .getStage()
-                    ?.getRelativePointerPosition();
-                  if (!relativePosition) {
-                    return;
-                  }
-                  setPosition({
-                    x: Math.trunc(relativePosition.y / 16),
-                    y: Math.trunc(relativePosition.x / 16),
-                  });
-                }}
-              >
-                {[...Array(gameState.map.length)].map((_, row) =>
-                  [...Array(gameState.map![row].length)].map((_, col) => (
-                    <Tile
-                      id={gameState.map![row][col]}
-                      onClick={handleClick}
+            <div className={`grid grid-cols-95 grid-rows-41`}>
+              {[...Array(gameState.map.length)].map((_, row) =>
+                [...Array(gameState.map![row].length)].map((_, col) => (
+                  <>
+                    <div
                       key={`${row}-${col}`}
-                      row={row}
-                      col={col}
-                      hovered={row == position?.x && col == position?.y}
+                      data-testID={`${row}-${col}`}
+                      className="border border-border w-3 h-3 cursor-pointer"
+                      style={{
+                        background:
+                          tilesColor[gameState.map![row][col]] ?? 'white',
+                      }}
+                      onClick={handleClick}
                     />
-                  )),
-                )}
-              </Layer>
-            </Stage>
+                  </>
+                )),
+              )}
+            </div>
             <div className="flex flex-col gap-2">
               <Card>
                 <CardHeader>
@@ -303,7 +270,7 @@ const PlayingPage = () => {
       >
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Tu {"l'"} entends ce bruit ?</DialogTitle>
+            <DialogTitle>Tu {"l'"}entends ce bruit ?</DialogTitle>
             <DialogDescription>
               Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quidem,
               nobis.
