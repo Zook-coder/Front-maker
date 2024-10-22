@@ -1,6 +1,6 @@
 import { GAME_STATE_MOCK } from '@/testing/__fixtures__/gamestate';
 import { PLAYER_MOCK } from '@/testing/__fixtures__/player';
-import { renderPage, serverSocket, user } from '@/testing/utils';
+import { renderPage, serverSocket, socket, user } from '@/testing/utils';
 import { screen, waitFor } from '@testing-library/dom';
 import PlayingPage from '../page';
 
@@ -62,9 +62,34 @@ describe('<PlayingPage />', () => {
 
     await waitFor(() => {
       expect(screen.getByText("Tu l'entends ce bruit ?")).toBeInTheDocument();
-      expect(screen.getByText('LA BETE EST LA')).toBeInTheDocument();
+      expect(screen.getAllByText('TENEBRES')).toHaveLength(2);
 
       expect(screen.getByText('Piéger la case')).toBeInTheDocument();
+    });
+  });
+
+  it('should send the trap request when clicking the submit button in the attack dialog', async () => {
+    const emitSpy = jest.spyOn(socket, 'emit');
+    renderPage(<PlayingPage />);
+    serverSocket.emit('playerInfo', JSON.stringify(PLAYER_MOCK));
+    serverSocket.emit('gamestate', JSON.stringify(GAME_STATE_MOCK));
+
+    await waitFor(() => {
+      expect(screen.getByTestId('0-0')).toBeInTheDocument();
+    });
+
+    await user.click(screen.getByTestId('0-0'));
+    await user.click(screen.getByText('Piéger la case'));
+    await waitFor(() => {
+      expect(emitSpy).toHaveBeenCalledWith(
+        'cast:item',
+        JSON.stringify({
+          id: '1',
+          x: 0,
+          y: 0,
+          item: 'TENEBRES',
+        }),
+      );
     });
   });
 });
