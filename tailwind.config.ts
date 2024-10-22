@@ -56,6 +56,12 @@ const config: Config = {
         md: 'calc(var(--radius) - 2px)',
         sm: 'calc(var(--radius) - 4px)',
       },
+      gridTemplateColumns: {
+        95: 'repeat(95, minmax(0, 1fr))',
+      },
+      gridTemplateRows: {
+        41: 'repeat(41, minmax(0, 1fr))',
+      },
     },
   },
   // eslint-disable-next-line @typescript-eslint/no-require-imports

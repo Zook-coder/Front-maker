@@ -1,19 +1,23 @@
-import { screen, waitFor } from '@testing-library/react';
-import Lobby from '../page';
-import { renderPage, serverSocket, socket, user } from '@/testing/utils';
-import { ONE_PLAYER_MOCK, PLAYER_MOCK } from '@/testing/__fixtures__/player';
 import { cleanup } from '@/__mocks__/socket.io-client';
+import {
+  ONE_PLAYER_MOCK,
+  PLAYER_MOCK,
+  PLAYERS_MOCK,
+} from '@/testing/__fixtures__/player';
+import { renderPage, serverSocket, socket, user } from '@/testing/utils';
+import { screen, waitFor } from '@testing-library/react';
 import { redirect } from 'next/navigation';
+import Lobby from '../page';
 
 describe('<Lobby />', () => {
-  afterEach(() => {
+  beforeEach(() => {
     cleanup();
   });
 
   it('should render successfully', async () => {
     renderPage(<Lobby />);
 
-    serverSocket.emit('lobbyplayers', JSON.stringify([PLAYER_MOCK]));
+    serverSocket.emit('lobbyplayers', JSON.stringify(PLAYERS_MOCK));
 
     await waitFor(() => {
       expect(screen.getByText('Choisir votre pseudo')).toBeInTheDocument();
@@ -29,6 +33,10 @@ describe('<Lobby />', () => {
       expect(screen.getByText('J')).toBeInTheDocument();
       expect(screen.getByText('John')).toBeInTheDocument();
       expect(screen.getByText('Web')).toBeInTheDocument();
+
+      expect(screen.getByText('D')).toBeInTheDocument();
+      expect(screen.getByText('Dummy')).toBeInTheDocument();
+      expect(screen.getByText('Unity')).toBeInTheDocument();
     });
   });
 
@@ -150,6 +158,15 @@ describe('<Lobby />', () => {
     });
   });
 
+  it('should enable signup button on singupfailed', async () => {
+    renderPage(<Lobby />);
+    serverSocket.emit('signupfailed', undefined);
+
+    await waitFor(() => {
+      expect(screen.getByText('Envoyer')).toBeEnabled();
+    });
+  });
+
   it('should start a timer when the start button is pressed and redirect to playing', async () => {
     const emitSpy = jest.spyOn(socket, 'emit');
     renderPage(<Lobby />);
@@ -227,6 +244,16 @@ describe('<Lobby />', () => {
         screen.getByText("Ce n'est qu'un au revoir..."),
       ).toBeInTheDocument();
       expect(screen.getByText('John a quitté la partie')).toBeInTheDocument();
+    });
+  });
+
+  it('should set playerId in local storage on signupsuccess', async () => {
+    renderPage(<Lobby />);
+
+    serverSocket.emit('signupsuccess', JSON.stringify(PLAYER_MOCK));
+
+    await waitFor(() => {
+      expect(localStorage.getItem('playerId')).toEqual('1');
     });
   });
 });

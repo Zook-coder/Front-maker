@@ -97,28 +97,20 @@ const WebSocketProvider = ({ children }: PropsWithChildren) => {
 
     socket.on('error', (message) => {
       const gameError: GameError = JSON.parse(message);
-      try {
-        const error = KNOWN_ERRORS[gameError.type];
+      const error = KNOWN_ERRORS[gameError.type];
 
-        if (gameError.type === 'UNKNOWN_PLAYER') {
-          localStorage.removeItem('playerId');
-          return;
-        }
+      if (gameError.type === 'UNKNOWN_PLAYER') {
+        localStorage.removeItem('playerId');
+        return;
+      }
 
-        if (error) {
-          toast({
-            title: 'Oops...',
-            description: error,
-            variant: 'destructive',
-          });
-        } else {
-          toast({
-            title: 'Oops...',
-            description: 'Une erreur est survenue.',
-            variant: 'destructive',
-          });
-        }
-      } catch {
+      if (error) {
+        toast({
+          title: 'Oops...',
+          description: error,
+          variant: 'destructive',
+        });
+      } else {
         toast({
           title: 'Oops...',
           description: 'Une erreur est survenue.',
@@ -179,14 +171,6 @@ const WebSocketProvider = ({ children }: PropsWithChildren) => {
       const newPlayer = players[players.length - 1];
       setPlayers(players);
 
-      if (players.length === 0) {
-        return;
-      }
-
-      if (newPlayer.id === player?.id) {
-        return;
-      }
-
       toast({
         title: 'Un nouvel arrivant !',
         description: `${newPlayer.name} a rejoint la partie`,
@@ -198,12 +182,7 @@ const WebSocketProvider = ({ children }: PropsWithChildren) => {
         players: newPlayers,
         logoutPlayer,
       }: { players: Player[]; logoutPlayer: Player } = JSON.parse(message);
-
       setPlayers(newPlayers);
-
-      if (logoutPlayer.id === player?.id) {
-        return;
-      }
 
       toast({
         title: "Ce n'est qu'un au revoir...",

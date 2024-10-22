@@ -1,13 +1,11 @@
 'use client';
-import Tile from '@/components/common/Tile';
+import { tilesColor } from '@/api/colors';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
@@ -36,12 +34,11 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet';
 import { convertElapsedTime } from '@/lib/utils';
+import SpellCard from '@/playing/SpellCard';
 import { useWebSocket } from '@/websockets/WebSocketProvider';
-import Konva from 'konva';
 import { LayoutDashboard } from 'lucide-react';
 import { redirect } from 'next/navigation';
-import React, { useEffect, useRef, useState } from 'react';
-import { Layer, Stage } from 'react-konva';
+import React, { useEffect, useState } from 'react';
 
 const PlayingPage = () => {
   const { gameState, player } = useWebSocket();
@@ -50,10 +47,10 @@ const PlayingPage = () => {
     height: number;
   }>();
   const [dialogOpened, setDialogOpened] = useState(false);
-  const [offsetX, setOffsetX] = useState(0);
-  const [offsetY, setOffsetY] = useState(0);
-  const [position, setPosition] = useState<{ x: number; y: number }>();
-  const layer = useRef(null);
+  const [hoveredPosition, setHoveredPosition] = useState<{
+    row: number;
+    col: number;
+  }>();
 
   useEffect(() => {
     const handleResize = () => {
@@ -69,11 +66,6 @@ const PlayingPage = () => {
 
     return () => window.removeEventListener('resize', handleResize);
   }, []);
-
-  const handleDrag = (e: Konva.KonvaEventObject<MouseEvent>) => {
-    setOffsetX(offsetX + e.evt.movementX);
-    setOffsetY(offsetY + e.evt.movementY);
-  };
 
   useEffect(() => {
     if (gameState.status !== 'PLAYING') {
@@ -119,49 +111,11 @@ const PlayingPage = () => {
                     </SheetDescription>
                   </SheetHeader>
                   <div className="flex flex-col mt-4">
-                    <Card className="border-transparent shadow-none px-0">
-                      <CardHeader className="px-0 py-2">
-                        <div className="flex items-center justify-between">
-                          <CardTitle>Sort 1</CardTitle>
-                          <span className="text-muted-foreground">
-                            {convertElapsedTime(gameState.timer)}
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Badge>Dégats</Badge>
-                          <Badge variant="outline">Soin</Badge>
-                        </div>
-                      </CardHeader>
-                      <CardDescription>
-                        Lorem, ipsum dolor sit amet consectetur adipisicing
-                        elit. Consectetur, saepe!
-                      </CardDescription>
-                      <CardFooter className="px-0 py-4 flex justify-end">
-                        <Button className="w-full">Envoyer</Button>
-                      </CardFooter>
-                    </Card>
+                    <SpellCard id={1} name="Sort 1" description="" />
                     <Separator className="my-2" />
-                    <Card className="border-transparent shadow-none px-0">
-                      <CardHeader className="px-0 py-2">
-                        <div className="flex items-center justify-between">
-                          <CardTitle>Sort 1</CardTitle>
-                          <span className="text-muted-foreground">
-                            {convertElapsedTime(gameState.timer)}
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Badge>Dégats</Badge>
-                          <Badge variant="outline">Soin</Badge>
-                        </div>
-                      </CardHeader>
-                      <CardDescription>
-                        Lorem, ipsum dolor sit amet consectetur adipisicing
-                        elit. Consectetur, saepe!
-                      </CardDescription>
-                      <CardFooter className="px-0 py-4 flex justify-end">
-                        <Button className="w-full">Envoyer</Button>
-                      </CardFooter>
-                    </Card>
+                    <SpellCard id={1} name="Sort 2" description="" />
+                    <Separator className="my-2" />
+                    <SpellCard id={1} name="Sort 3" description="" />
                   </div>
                 </SheetContent>
               </Sheet>
@@ -177,46 +131,28 @@ const PlayingPage = () => {
       <div className="flex justify-between px-10">
         {windowsSize && gameState && gameState.map && (
           <>
-            <Stage
-              width={window.innerWidth / 1.3}
-              height={window.innerHeight}
-              onDragEnd={handleDrag}
-              style={{ cursor: 'grab' }}
-            >
-              <Layer
-                ref={layer}
-                offsetX={-offsetX}
-                offsetY={-offsetY}
-                onMouseMove={(e) => {
-                  if (!layer.current) {
-                    return;
-                  }
-                  const relativePosition = e.target
-                    .getStage()
-                    ?.getRelativePointerPosition();
-                  if (!relativePosition) {
-                    return;
-                  }
-                  setPosition({
-                    x: Math.trunc(relativePosition.y / 16),
-                    y: Math.trunc(relativePosition.x / 16),
-                  });
-                }}
-              >
-                {[...Array(gameState.map.length)].map((_, row) =>
-                  [...Array(gameState.map![row].length)].map((_, col) => (
-                    <Tile
-                      id={gameState.map![row][col]}
-                      onClick={handleClick}
+            <div className={`grid grid-cols-95 grid-rows-41 gap-x-0`}>
+              {[...Array(gameState.map.length)].map((_, row) =>
+                [...Array(gameState.map![row].length)].map((_, col) => (
+                  <>
+                    <div
                       key={`${row}-${col}`}
-                      row={row}
-                      col={col}
-                      hovered={row == position?.x && col == position?.y}
+                      data-testID={`${row}-${col}`}
+                      className="w-3 h-3 border border-border cursor-pointer"
+                      onMouseMove={() => setHoveredPosition({ row, col })}
+                      style={{
+                        background:
+                          hoveredPosition?.col === col &&
+                          hoveredPosition.row === row
+                            ? 'black'
+                            : (tilesColor[gameState.map![row][col]] ?? 'white'),
+                      }}
+                      onClick={handleClick}
                     />
-                  )),
-                )}
-              </Layer>
-            </Stage>
+                  </>
+                )),
+              )}
+            </div>
             <div className="flex flex-col gap-2">
               <Card>
                 <CardHeader>
@@ -297,13 +233,14 @@ const PlayingPage = () => {
           </>
         )}
       </div>
+      <div></div>
       <Dialog
         open={dialogOpened}
         onOpenChange={() => setDialogOpened(!dialogOpened)}
       >
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Tu {"l'"} entends ce bruit ?</DialogTitle>
+            <DialogTitle>Tu {"l'"}entends ce bruit ?</DialogTitle>
             <DialogDescription>
               Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quidem,
               nobis.
