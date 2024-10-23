@@ -5,5 +5,4 @@ export interface GameState {
   startTimer: number;
   timer: number;
   loops: number;
-  map?: number[][];
 }

@@ -43,32 +43,13 @@ import { useItemForm } from '@/hooks/useItemForm';
 import { Form, FormControl, FormField } from '@/components/ui/form';
 
 const PlayingPage = () => {
-  const { gameState, player } = useWebSocket();
+  const { gameState, map, player } = useWebSocket();
   const { onSubmit, form, setTarget } = useItemForm();
-  const [windowsSize, setWindowSize] = useState<{
-    width: number;
-    height: number;
-  }>();
   const [dialogOpened, setDialogOpened] = useState(false);
   const [hoveredPosition, setHoveredPosition] = useState<{
     row: number;
     col: number;
   }>();
-
-  useEffect(() => {
-    const handleResize = () => {
-      setWindowSize({
-        width: window.innerWidth,
-        height: window.innerHeight,
-      });
-    };
-
-    handleResize();
-
-    window.addEventListener('resize', handleResize);
-
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
 
   useEffect(() => {
     if (gameState.status !== 'PLAYING') {
@@ -133,109 +114,105 @@ const PlayingPage = () => {
         </nav>
       </header>
       <div className="flex justify-between px-10">
-        {windowsSize && gameState && gameState.map && (
-          <>
-            <div className={`grid grid-cols-95 grid-rows-41 gap-x-0`}>
-              {[...Array(gameState.map.length)].map((_, row) =>
-                [...Array(gameState.map![row].length)].map((_, col) => (
-                  <>
-                    <div
-                      key={`${row}-${col}`}
-                      data-testid={`${row}-${col}`}
-                      className="w-3 h-3 border border-border cursor-pointer"
-                      onMouseMove={() => setHoveredPosition({ row, col })}
-                      style={{
-                        background:
-                          hoveredPosition?.col === col &&
-                          hoveredPosition.row === row
-                            ? 'black'
-                            : (tilesColor[gameState.map![row][col]] ?? 'white'),
-                      }}
-                      onClick={() => handleClick(row, col)}
-                    />
-                  </>
-                )),
-              )}
-            </div>
-            <div className="flex flex-col gap-2">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Statut de jeu</CardTitle>
-                  <CardDescription>
-                    Lorem ipsum dolor sit amet consectetur.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex flex-col">
-                    <ul>
-                      <li className="flex items-center justify-between">
-                        <span className="text-muted-foreground">
-                          Temps de jeu
-                        </span>
-                        <span>{convertElapsedTime(gameState.timer)}</span>
-                      </li>
-                      <li className="flex items-center justify-between">
-                        <span className="text-muted-foreground">
-                          Nombre de boucles
-                        </span>
-                        <span>{gameState.loops}</span>
-                      </li>
-                    </ul>
-                  </div>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardHeader>
-                  <CardTitle>Statistiques globales</CardTitle>
-                  <CardDescription>
-                    Lorem ipsum dolor sit amet consectetur.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div>
-                    <span className="text-base font-semibold">Bienfaiteur</span>
-                    <div className="flex flex-col">
-                      <ul>
-                        <li className="flex items-center justify-between">
-                          <span className="text-muted-foreground">
-                            Bonus utilisés
-                          </span>
-                          <span>1</span>
-                        </li>
-                        <li className="flex items-center justify-between">
-                          <span className="text-muted-foreground">
-                            Nombre de boucles
-                          </span>
-                          <span>{gameState.loops}</span>
-                        </li>
-                      </ul>
-                    </div>
-                    <Separator className="my-2" />
-                  </div>
-                  <div>
-                    <span className="text-base font-semibold">Malfaiteur</span>
-                    <div className="flex flex-col">
-                      <ul>
-                        <li className="flex items-center justify-between">
-                          <span className="text-muted-foreground">
-                            Bonus utilisés
-                          </span>
-                          <span>1</span>
-                        </li>
-                        <li className="flex items-center justify-between">
-                          <span className="text-muted-foreground">
-                            Nombre de boucles
-                          </span>
-                          <span>{gameState.loops}</span>
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </>
+        {map && (
+          <div className={`grid grid-cols-95 grid-rows-41 gap-x-0`}>
+            {[...Array(map.length)].map((_, row) =>
+              [...Array(map[row].length)].map((_, col) => (
+                <>
+                  <div
+                    key={`${row}-${col}`}
+                    data-testid={`${row}-${col}`}
+                    className="w-3 h-3 border border-border cursor-pointer"
+                    onMouseMove={() => setHoveredPosition({ row, col })}
+                    style={{
+                      background:
+                        hoveredPosition?.col === col &&
+                        hoveredPosition.row === row
+                          ? 'black'
+                          : (tilesColor[map[row][col]] ?? 'white'),
+                    }}
+                    onClick={() => handleClick(row, col)}
+                  />
+                </>
+              )),
+            )}
+          </div>
         )}
+        <div className="flex flex-col gap-2">
+          <Card>
+            <CardHeader>
+              <CardTitle>Statut de jeu</CardTitle>
+              <CardDescription>
+                Lorem ipsum dolor sit amet consectetur.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="flex flex-col">
+                <ul>
+                  <li className="flex items-center justify-between">
+                    <span className="text-muted-foreground">Temps de jeu</span>
+                    <span>{convertElapsedTime(gameState.timer)}</span>
+                  </li>
+                  <li className="flex items-center justify-between">
+                    <span className="text-muted-foreground">
+                      Nombre de boucles
+                    </span>
+                    <span>{gameState.loops}</span>
+                  </li>
+                </ul>
+              </div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle>Statistiques globales</CardTitle>
+              <CardDescription>
+                Lorem ipsum dolor sit amet consectetur.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div>
+                <span className="text-base font-semibold">Bienfaiteur</span>
+                <div className="flex flex-col">
+                  <ul>
+                    <li className="flex items-center justify-between">
+                      <span className="text-muted-foreground">
+                        Bonus utilisés
+                      </span>
+                      <span>1</span>
+                    </li>
+                    <li className="flex items-center justify-between">
+                      <span className="text-muted-foreground">
+                        Nombre de boucles
+                      </span>
+                      <span>{gameState.loops}</span>
+                    </li>
+                  </ul>
+                </div>
+                <Separator className="my-2" />
+              </div>
+              <div>
+                <span className="text-base font-semibold">Malfaiteur</span>
+                <div className="flex flex-col">
+                  <ul>
+                    <li className="flex items-center justify-between">
+                      <span className="text-muted-foreground">
+                        Bonus utilisés
+                      </span>
+                      <span>1</span>
+                    </li>
+                    <li className="flex items-center justify-between">
+                      <span className="text-muted-foreground">
+                        Nombre de boucles
+                      </span>
+                      <span>{gameState.loops}</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       </div>
       <Dialog
         open={dialogOpened}

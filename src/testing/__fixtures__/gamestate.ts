@@ -5,10 +5,4 @@ export const GAME_STATE_MOCK: GameState = {
   status: 'PLAYING',
   startTimer: 0,
   timer: 0,
-  map: [
-    [0, 0, 0, 0],
-    [0, 0, 0, 0],
-    [0, 0, 0, 0],
-    [0, 0, 0, 0],
-  ],
 };
