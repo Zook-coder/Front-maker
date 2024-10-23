@@ -39,9 +39,12 @@ import { useWebSocket } from '@/websockets/WebSocketProvider';
 import { LayoutDashboard } from 'lucide-react';
 import { redirect } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
+import { useItemForm } from '@/hooks/useItemForm';
+import { Form, FormControl, FormField } from '@/components/ui/form';
 
 const PlayingPage = () => {
   const { gameState, player } = useWebSocket();
+  const { onSubmit, form, setTarget } = useItemForm();
   const [windowsSize, setWindowSize] = useState<{
     width: number;
     height: number;
@@ -73,8 +76,9 @@ const PlayingPage = () => {
     }
   }, [gameState]);
 
-  const handleClick = () => {
+  const handleClick = (x: number, y: number) => {
     setDialogOpened(true);
+    setTarget({ x, y });
   };
 
   return (
@@ -137,7 +141,7 @@ const PlayingPage = () => {
                   <>
                     <div
                       key={`${row}-${col}`}
-                      data-testID={`${row}-${col}`}
+                      data-testid={`${row}-${col}`}
                       className="w-3 h-3 border border-border cursor-pointer"
                       onMouseMove={() => setHoveredPosition({ row, col })}
                       style={{
@@ -147,7 +151,7 @@ const PlayingPage = () => {
                             ? 'black'
                             : (tilesColor[gameState.map![row][col]] ?? 'white'),
                       }}
-                      onClick={handleClick}
+                      onClick={() => handleClick(row, col)}
                     />
                   </>
                 )),
@@ -233,7 +237,6 @@ const PlayingPage = () => {
           </>
         )}
       </div>
-      <div></div>
       <Dialog
         open={dialogOpened}
         onOpenChange={() => setDialogOpened(!dialogOpened)}
@@ -246,21 +249,42 @@ const PlayingPage = () => {
               nobis.
             </DialogDescription>
           </DialogHeader>
-          <Select>
-            <SelectTrigger>
-              <SelectValue placeholder="LA BETE EST LA" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="MALHEUR">TENEBRES</SelectItem>
-              <SelectItem value="MALHEUR">MALHEUR</SelectItem>
-              <SelectItem value="SMOLDÉ">SMOLDÉ</SelectItem>
-            </SelectContent>
-          </Select>
-          <DialogFooter>
-            <Button type="submit" onClick={() => setDialogOpened(false)}>
-              Piéger la case
-            </Button>
-          </DialogFooter>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)}>
+              <FormField
+                control={form.control}
+                name="item"
+                render={({ field }) => (
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="TENEBRES">TENEBRES</SelectItem>
+                      <SelectItem value="MALHEUR">MALHEUR</SelectItem>
+                      <SelectItem value="SMOLDÉ">SMOLDÉ</SelectItem>
+                    </SelectContent>
+                  </Select>
+                )}
+              />
+              <DialogFooter className="mt-2">
+                <Button
+                  type="submit"
+                  disabled={!form.formState.isValid}
+                  onClick={() => {
+                    setDialogOpened(false);
+                  }}
+                >
+                  Piéger la case
+                </Button>
+              </DialogFooter>
+            </form>
+          </Form>
         </DialogContent>
       </Dialog>
     </>
