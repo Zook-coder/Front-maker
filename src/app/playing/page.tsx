@@ -17,6 +17,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { Form, FormControl, FormField } from '@/components/ui/form';
 import {
   Select,
   SelectContent,
@@ -33,14 +34,13 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet';
+import { useItemForm } from '@/hooks/useItemForm';
 import { convertElapsedTime } from '@/lib/utils';
 import SpellCard from '@/playing/SpellCard';
 import { useWebSocket } from '@/websockets/WebSocketProvider';
 import { LayoutDashboard } from 'lucide-react';
 import { redirect } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
-import { useItemForm } from '@/hooks/useItemForm';
-import { Form, FormControl, FormField } from '@/components/ui/form';
 import { Item } from '@/api/item';
 
 const DEFAULT_ITEM: Item = {
@@ -107,11 +107,22 @@ const PlayingPage = () => {
                     </SheetDescription>
                   </SheetHeader>
                   <div className="flex flex-col mt-4">
-                    <SpellCard id={1} name="Sort 1" description="" />
-                    <Separator className="my-2" />
-                    <SpellCard id={1} name="Sort 2" description="" />
-                    <Separator className="my-2" />
-                    <SpellCard id={1} name="Sort 3" description="" />
+                    <div className="flex flex-col mt-4">
+                      {player?.spells.map((spell, index) => (
+                        <>
+                          <SpellCard
+                            key={index}
+                            id={index}
+                            name={spell.name}
+                            description={spell.description}
+                            duration={spell.duration}
+                            currentCooldown={spell.currentCooldown}
+                            type={spell.type}
+                          />
+                          <Separator className="my-2" />
+                        </>
+                      ))}
+                    </div>
                   </div>
                 </SheetContent>
               </Sheet>

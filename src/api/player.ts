@@ -1,3 +1,4 @@
+import { Spell } from './spell';
 import { Item } from './item';
 
 export type PlayerType = 'WEB' | 'UNITY';
@@ -8,5 +9,7 @@ export interface Player {
   name: string;
   type: PlayerType;
   role?: PlayerRole;
+  speed?: number;
+  spells: Spell[];
   items: Item[];
 }

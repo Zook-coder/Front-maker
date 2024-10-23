@@ -4,6 +4,7 @@ export const PLAYER_MOCK: Player = {
   id: '1',
   name: 'John',
   type: 'WEB',
+  spells: [],
   items: [
     {
       name: 'Coin',
@@ -24,6 +25,7 @@ export const PLAYERS_MOCK: Player[] = [
     id: '2',
     name: 'Dummy',
     type: 'UNITY',
+    spells: [],
     items: [
       {
         name: 'Coin',

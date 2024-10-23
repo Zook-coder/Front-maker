@@ -1,5 +1,6 @@
 import { GAME_STATE_MOCK } from '@/testing/__fixtures__/gamestate';
 import { PLAYER_MOCK } from '@/testing/__fixtures__/player';
+import { SPELL_MOCK } from '@/testing/__fixtures__/spell';
 import { renderPage, serverSocket, socket, user } from '@/testing/utils';
 import { screen, waitFor } from '@testing-library/dom';
 import PlayingPage from '../page';
@@ -38,7 +39,11 @@ describe('<PlayingPage />', () => {
     renderPage(<PlayingPage />);
     serverSocket.emit(
       'playerInfo',
-      JSON.stringify({ ...PLAYER_MOCK, role: 'Protector' }),
+      JSON.stringify({
+        ...PLAYER_MOCK,
+        role: 'Protector',
+        spells: [SPELL_MOCK],
+      }),
     );
 
     await waitFor(() => {
@@ -49,6 +54,38 @@ describe('<PlayingPage />', () => {
 
     await waitFor(() => {
       expect(screen.getByText('Manuel des sorts')).toBeInTheDocument();
+      expect(screen.getByText('Slow Mode')).toBeInTheDocument();
+      expect(screen.getByText('Ralentissement')).toBeInTheDocument();
+      expect(screen.getByText('Durée: 10s')).toBeInTheDocument();
+      expect(screen.getByText('SlowMode description')).toBeInTheDocument();
+      expect(screen.getByText('Prêt')).toBeInTheDocument();
+    });
+  });
+
+  it('should open spells sheet when cast spell button is clicked', async () => {
+    renderPage(<PlayingPage />);
+    serverSocket.emit(
+      'playerInfo',
+      JSON.stringify({
+        ...PLAYER_MOCK,
+        role: 'Protector',
+        spells: [{ ...SPELL_MOCK, currentCooldown: 10 }],
+      }),
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('Lancer un sort')).toBeInTheDocument();
+    });
+
+    await user.click(screen.getByText('Lancer un sort'));
+
+    await waitFor(() => {
+      expect(screen.getByText('Manuel des sorts')).toBeInTheDocument();
+      expect(screen.getByText('Slow Mode')).toBeInTheDocument();
+      expect(screen.getByText('Ralentissement')).toBeInTheDocument();
+      expect(screen.getByText('Durée: 10s')).toBeInTheDocument();
+      expect(screen.getByText('SlowMode description')).toBeInTheDocument();
+      expect(screen.getByText('00:10')).toBeInTheDocument();
     });
   });
 
