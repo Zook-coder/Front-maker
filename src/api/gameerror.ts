@@ -9,4 +9,7 @@ export const KNOWN_ERRORS: Record<string, string> = {
   UNKNOWN_PLAYER: '',
   UNAUTHORIZED: "Tu n'as pas la permission d'effectuer cette action.",
   UNITY_PLAYER_NOT_FOUND: "Le joueur sur Unity manque à l'appel",
+  NOT_A_PLAYER: 'Vous ne faites pas partie de la liste de joueur.',
+  ITEM_ON_COOLDOWN: "L'item est encore sous cooldown.",
+  UNKNOWN_ITEM: "L'item sélectionné n'existe pas.",
 };

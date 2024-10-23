@@ -15,7 +15,7 @@ export const useItemForm = () => {
     resolver: zodResolver(FormSchema),
     mode: 'onChange',
     defaultValues: {
-      item: 'TENEBRES',
+      item: 'COIN',
     },
   });
 
