@@ -21,6 +21,7 @@ describe('<WebSocketProvider />', () => {
         'whoami',
         JSON.stringify({ id: '1234' }),
       );
+      expect(emitSpy).toHaveBeenCalledWith('maprequest', undefined);
     });
   });
 

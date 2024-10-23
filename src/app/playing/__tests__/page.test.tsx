@@ -3,6 +3,7 @@ import { PLAYER_MOCK } from '@/testing/__fixtures__/player';
 import { renderPage, serverSocket, socket, user } from '@/testing/utils';
 import { screen, waitFor } from '@testing-library/dom';
 import PlayingPage from '../page';
+import { MAP_MOCK } from '@/testing/__fixtures__/map';
 
 describe('<PlayingPage />', () => {
   it('should render successfully', async () => {
@@ -53,6 +54,7 @@ describe('<PlayingPage />', () => {
   it('should open attack dialog when tile is pressed', async () => {
     renderPage(<PlayingPage />);
     serverSocket.emit('gamestate', JSON.stringify(GAME_STATE_MOCK));
+    serverSocket.emit('map', JSON.stringify(MAP_MOCK));
 
     await waitFor(() => {
       expect(screen.getByTestId('0-0')).toBeInTheDocument();
@@ -73,6 +75,7 @@ describe('<PlayingPage />', () => {
     renderPage(<PlayingPage />);
     serverSocket.emit('playerInfo', JSON.stringify(PLAYER_MOCK));
     serverSocket.emit('gamestate', JSON.stringify(GAME_STATE_MOCK));
+    serverSocket.emit('map', JSON.stringify(MAP_MOCK));
 
     await waitFor(() => {
       expect(screen.getByTestId('0-0')).toBeInTheDocument();
