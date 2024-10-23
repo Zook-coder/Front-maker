@@ -23,6 +23,8 @@ interface Context {
   map: number[][] | undefined;
   queries: Record<Query, QueryStatus>;
   setQueries: Dispatch<SetStateAction<Record<Query, QueryStatus>>>;
+  devMode: boolean;
+  resetGame: () => void;
 }
 
 const INITIAL_STATE: GameState = {
@@ -50,6 +52,8 @@ const WebSocketContext = createContext<Context>({
       loading: false,
     },
   },
+  devMode: false,
+  resetGame: () => {},
 });
 
 export const useWebSocket = () => {
@@ -66,6 +70,7 @@ const WebSocketProvider = ({ children }: PropsWithChildren) => {
   const [players, setPlayers] = useState<Player[]>([]);
   const [player, setPlayer] = useState<Player>();
   const [map, setMap] = useState<number[][]>();
+  const [devMode, setDevMode] = useState(false);
   const { toast } = useToast();
   const [queries, setQueries] = useState<Record<Query, QueryStatus>>({
     signup: {
@@ -78,6 +83,24 @@ const WebSocketProvider = ({ children }: PropsWithChildren) => {
       loading: false,
     },
   });
+
+  const resetGame = () => {
+    localStorage.removeItem('playerId');
+    setPlayers([]);
+    setPlayer(undefined);
+    setQueries({
+      signup: {
+        loading: false,
+      },
+      players: {
+        loading: false,
+      },
+      start: {
+        loading: false,
+      },
+    });
+    setMap(undefined);
+  };
 
   const connectWebSocketClient = () => {
     const socket = io(
@@ -165,6 +188,11 @@ const WebSocketProvider = ({ children }: PropsWithChildren) => {
       });
     });
 
+    socket.on('devmode', (msg) => {
+      const { dev }: { dev: boolean } = JSON.parse(msg);
+      setDevMode(dev);
+    });
+
     socket.on('lobbyplayers', (message) => {
       const players: Player[] = JSON.parse(message);
       setPlayers(players);
@@ -217,12 +245,14 @@ const WebSocketProvider = ({ children }: PropsWithChildren) => {
     <WebSocketContext.Provider
       value={{
         socket,
+        devMode,
         map,
         gameState,
         player,
         players,
         queries,
         setQueries,
+        resetGame,
       }}
     >
       {children}
