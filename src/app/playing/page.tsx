@@ -63,7 +63,8 @@ const DEFAULT_ITEM: Item = {
 };
 
 const PlayingPage = () => {
-  const { gameState, map, player, devMode, socket, resetGame } = useWebSocket();
+  const { gameState, map, player, devMode, socket, unityPlayer, resetGame } =
+    useWebSocket();
   const { onSubmit, form, setTarget } = useItemForm();
   const [dialogOpened, setDialogOpened] = useState(false);
   const [hoveredPosition, setHoveredPosition] = useState<{
@@ -81,6 +82,23 @@ const PlayingPage = () => {
   const handleClick = (x: number, y: number) => {
     setDialogOpened(true);
     setTarget({ x, y });
+  };
+
+  const getTileBackground = (row: number, col: number, map: number[][]) => {
+    if (unityPlayer?.position?.x == row && unityPlayer?.position?.y === col) {
+      return 'purple';
+    }
+    if (
+      gameState.items.some(
+        (item) => item.coords.x === row && item.coords.y === col,
+      )
+    ) {
+      return 'red';
+    }
+    if (hoveredPosition?.col === col && hoveredPosition.row === row) {
+      return 'black';
+    }
+    return tilesColor[map[row][col]] ?? 'white';
   };
 
   return (
@@ -182,15 +200,7 @@ const PlayingPage = () => {
                     className="w-3 h-3 border border-border cursor-pointer"
                     onMouseMove={() => setHoveredPosition({ row, col })}
                     style={{
-                      background: gameState.items.some(
-                        (item) =>
-                          item.coords.x === row && item.coords.y === col,
-                      )
-                        ? 'red'
-                        : hoveredPosition?.col === col &&
-                            hoveredPosition.row === row
-                          ? 'black'
-                          : (tilesColor[map[row][col]] ?? 'white'),
+                      background: getTileBackground(row, col, map),
                     }}
                     onClick={() => handleClick(row, col)}
                   />
