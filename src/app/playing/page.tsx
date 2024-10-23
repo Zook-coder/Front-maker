@@ -38,10 +38,20 @@ import { useItemForm } from '@/hooks/useItemForm';
 import { convertElapsedTime } from '@/lib/utils';
 import SpellCard from '@/playing/SpellCard';
 import { useWebSocket } from '@/websockets/WebSocketProvider';
-import { LayoutDashboard } from 'lucide-react';
 import { redirect } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { Item } from '@/api/item';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 
 const DEFAULT_ITEM: Item = {
   id: '1',
@@ -53,7 +63,7 @@ const DEFAULT_ITEM: Item = {
 };
 
 const PlayingPage = () => {
-  const { gameState, map, player } = useWebSocket();
+  const { gameState, map, player, devMode, socket, resetGame } = useWebSocket();
   const { onSubmit, form, setTarget } = useItemForm();
   const [dialogOpened, setDialogOpened] = useState(false);
   const [hoveredPosition, setHoveredPosition] = useState<{
@@ -128,9 +138,34 @@ const PlayingPage = () => {
               </Sheet>
             </li>
             <li>
-              <Button variant="outline" size="icon">
-                <LayoutDashboard className="text-muted-foreground" />
-              </Button>
+              {devMode && (
+                <AlertDialog>
+                  <AlertDialogTrigger>
+                    <Button variant="destructive">Relancer la partie</Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Êtes-vous sûr ?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        Cette action entrainera une réinitialisation complète de
+                        la partie.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Annuler</AlertDialogCancel>
+                      <AlertDialogAction
+                        onClick={() => {
+                          socket?.emit('restart', undefined);
+                          resetGame();
+                          redirect('/');
+                        }}
+                      >
+                        Continuer
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              )}
             </li>
           </ul>
         </nav>

@@ -6,6 +6,7 @@ import { screen, waitFor } from '@testing-library/dom';
 import PlayingPage from '../page';
 import { MAP_MOCK } from '@/testing/__fixtures__/map';
 import { COIN_MOCK } from '@/testing/__fixtures__/item';
+import { redirect } from 'next/navigation';
 
 describe('<PlayingPage />', () => {
   it('should render successfully', async () => {
@@ -150,5 +151,35 @@ describe('<PlayingPage />', () => {
     await waitFor(() => {
       expect(screen.getByTestId('0-0')).toHaveStyle({ background: 'red' });
     });
+  });
+
+  it('should show restart button if dev mode is enabled', async () => {
+    renderPage(<PlayingPage />);
+
+    serverSocket.emit('devmode', JSON.stringify({ dev: true }));
+
+    await waitFor(() => {
+      expect(screen.getByText('Relancer la partie')).toBeInTheDocument();
+    });
+  });
+
+  it('should restart the game if the restart button is pressed', async () => {
+    const emitSpy = jest.spyOn(socket, 'emit');
+    renderPage(<PlayingPage />);
+
+    serverSocket.emit('devmode', JSON.stringify({ dev: true }));
+
+    await waitFor(() => {
+      expect(screen.getByText('Relancer la partie')).toBeInTheDocument();
+    });
+
+    await user.click(screen.getByText('Relancer la partie'));
+
+    expect(screen.getByText('Êtes-vous sûr ?')).toBeInTheDocument();
+
+    await user.click(screen.getByText('Continuer'));
+
+    expect(emitSpy).toHaveBeenCalledWith('restart', undefined);
+    expect(redirect).toHaveBeenCalledWith('/');
   });
 });
