@@ -4,6 +4,7 @@ import { renderPage, serverSocket, socket, user } from '@/testing/utils';
 import { screen, waitFor } from '@testing-library/dom';
 import PlayingPage from '../page';
 import { MAP_MOCK } from '@/testing/__fixtures__/map';
+import { COIN_MOCK } from '@/testing/__fixtures__/item';
 
 describe('<PlayingPage />', () => {
   it('should render successfully', async () => {
@@ -55,6 +56,7 @@ describe('<PlayingPage />', () => {
     renderPage(<PlayingPage />);
     serverSocket.emit('gamestate', JSON.stringify(GAME_STATE_MOCK));
     serverSocket.emit('map', JSON.stringify(MAP_MOCK));
+    serverSocket.emit('playerInfo', JSON.stringify(PLAYER_MOCK));
 
     await waitFor(() => {
       expect(screen.getByTestId('0-0')).toBeInTheDocument();
@@ -64,9 +66,12 @@ describe('<PlayingPage />', () => {
 
     await waitFor(() => {
       expect(screen.getByText("Tu l'entends ce bruit ?")).toBeInTheDocument();
-      expect(screen.getAllByText('TENEBRES')).toHaveLength(2);
+      expect(screen.getAllByText('Coin')).toHaveLength(2);
 
       expect(screen.getByText('Piéger la case')).toBeInTheDocument();
+      expect(
+        screen.getByText('A coin that gives points to the player'),
+      ).toBeInTheDocument();
     });
   });
 
@@ -90,9 +95,23 @@ describe('<PlayingPage />', () => {
           id: '1',
           x: 0,
           y: 0,
-          item: 'TENEBRES',
+          item: 'COIN',
         }),
       );
+    });
+  });
+
+  it('should mark trapped tiles according to the game state', async () => {
+    renderPage(<PlayingPage />);
+
+    serverSocket.emit(
+      'gamestate',
+      JSON.stringify({ ...GAME_STATE_MOCK, items: [COIN_MOCK] }),
+    );
+    serverSocket.emit('map', JSON.stringify(MAP_MOCK));
+
+    await waitFor(() => {
+      expect(screen.getByTestId('0-0')).toHaveStyle({ background: 'red' });
     });
   });
 });

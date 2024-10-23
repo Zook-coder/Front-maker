@@ -41,6 +41,16 @@ import { redirect } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { useItemForm } from '@/hooks/useItemForm';
 import { Form, FormControl, FormField } from '@/components/ui/form';
+import { Item } from '@/api/item';
+
+const DEFAULT_ITEM: Item = {
+  id: '1',
+  type: 'COIN',
+  description: 'A coin that gives points to the player',
+  duration: 0,
+  name: 'Coin',
+  coords: { x: 0, y: 0 },
+};
 
 const PlayingPage = () => {
   const { gameState, map, player } = useWebSocket();
@@ -50,6 +60,7 @@ const PlayingPage = () => {
     row: number;
     col: number;
   }>();
+  const [selectedItem, setSelectedItem] = useState<Item>(DEFAULT_ITEM);
 
   useEffect(() => {
     if (gameState.status !== 'PLAYING') {
@@ -125,9 +136,13 @@ const PlayingPage = () => {
                     className="w-3 h-3 border border-border cursor-pointer"
                     onMouseMove={() => setHoveredPosition({ row, col })}
                     style={{
-                      background:
-                        hoveredPosition?.col === col &&
-                        hoveredPosition.row === row
+                      background: gameState.items.some(
+                        (item) =>
+                          item.coords.x === row && item.coords.y === col,
+                      )
+                        ? 'red'
+                        : hoveredPosition?.col === col &&
+                            hoveredPosition.row === row
                           ? 'black'
                           : (tilesColor[map[row][col]] ?? 'white'),
                     }}
@@ -221,10 +236,7 @@ const PlayingPage = () => {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Tu {"l'"}entends ce bruit ?</DialogTitle>
-            <DialogDescription>
-              Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quidem,
-              nobis.
-            </DialogDescription>
+            <DialogDescription>{selectedItem.description}</DialogDescription>
           </DialogHeader>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -242,9 +254,16 @@ const PlayingPage = () => {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="TENEBRES">TENEBRES</SelectItem>
-                      <SelectItem value="MALHEUR">MALHEUR</SelectItem>
-                      <SelectItem value="SMOLDÉ">SMOLDÉ</SelectItem>
+                      {player?.items.map((item) => (
+                        <>
+                          <SelectItem
+                            onClick={() => setSelectedItem(item)}
+                            value={item.type}
+                          >
+                            {item.name}
+                          </SelectItem>
+                        </>
+                      ))}
                     </SelectContent>
                   </Select>
                 )}

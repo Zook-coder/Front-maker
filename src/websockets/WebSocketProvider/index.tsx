@@ -30,6 +30,7 @@ const INITIAL_STATE: GameState = {
   loops: 0,
   timer: 0,
   startTimer: 0,
+  items: [],
 };
 
 const WebSocketContext = createContext<Context>({
