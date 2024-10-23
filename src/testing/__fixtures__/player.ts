@@ -4,6 +4,7 @@ export const PLAYER_MOCK: Player = {
   id: '1',
   name: 'John',
   type: 'WEB',
+  spells: [],
 };
 
 export const ONE_PLAYER_MOCK: Player[] = [{ ...PLAYER_MOCK }];
@@ -14,5 +15,6 @@ export const PLAYERS_MOCK: Player[] = [
     id: '2',
     name: 'Dummy',
     type: 'UNITY',
+    spells: [],
   },
 ];
