@@ -13,6 +13,13 @@ export const PLAYER_MOCK: Player = {
       duration: 10,
       id: '1',
       coords: { x: 0, y: 0 },
+      owner: {
+        id: '2',
+        name: 'Dummy',
+        type: 'UNITY',
+        spells: [],
+        items: [],
+      },
     },
   ],
 };
@@ -34,6 +41,7 @@ export const PLAYERS_MOCK: Player[] = [
         duration: 10,
         id: '1',
         coords: { x: 0, y: 0 },
+        owner: { ...PLAYER_MOCK },
       },
     ],
   },

@@ -52,8 +52,9 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
+import TrapPopover from '@/components/playing/TrapPopover';
 
-const DEFAULT_ITEM: Item = {
+const DEFAULT_ITEM: Omit<Item, 'owner'> = {
   id: '1',
   type: 'COIN',
   description: 'A coin that gives points to the player',
@@ -70,7 +71,11 @@ const PlayingPage = () => {
     row: number;
     col: number;
   }>();
-  const [selectedItem, setSelectedItem] = useState<Item>(DEFAULT_ITEM);
+  const [selectedItem, setSelectedItem] =
+    useState<Omit<Item, 'owner'>>(DEFAULT_ITEM);
+  const [openedPopover, setOpenedPopover] = useState<
+    { x: number; y: number }[]
+  >([]);
 
   useEffect(() => {
     if (gameState.status !== 'PLAYING') {
@@ -79,9 +84,30 @@ const PlayingPage = () => {
   }, [gameState]);
 
   const handleClick = (x: number, y: number) => {
-    setDialogOpened(true);
-    setTarget({ x, y });
+    const marked = gameState.items.some(
+      (item) => item.coords.x === x && item.coords.y === y,
+    );
+    if (!marked) {
+      setDialogOpened(true);
+      setTarget({ x, y });
+      return;
+    }
+    if (openedPopover.some((item) => item.x == x && item.y == y)) {
+      setOpenedPopover((openedPopover) =>
+        openedPopover.filter((item) => item.x !== x && item.y !== y),
+      );
+    } else {
+      setOpenedPopover((openedPopover) => [...openedPopover, { x, y }]);
+    }
   };
+
+  const traps = gameState.items.reduce((traps, item) => {
+    if (!traps[item.coords.x]) {
+      traps[item.coords.x] = [];
+    }
+    traps[item.coords.x][item.coords.y] = item;
+    return traps;
+  }, [] as Item[][]);
 
   return (
     <>
@@ -179,7 +205,7 @@ const PlayingPage = () => {
                   <div
                     key={`${row}-${col}`}
                     data-testid={`${row}-${col}`}
-                    className="w-3 h-3 border border-border cursor-pointer"
+                    className="relative w-3 h-3 border border-border cursor-pointer"
                     onMouseMove={() => setHoveredPosition({ row, col })}
                     style={{
                       background: gameState.items.some(
@@ -193,7 +219,19 @@ const PlayingPage = () => {
                           : (tilesColor[map[row][col]] ?? 'white'),
                     }}
                     onClick={() => handleClick(row, col)}
-                  />
+                  >
+                    {openedPopover.some(
+                      (item) => item.x == row && item.y == col,
+                    ) &&
+                      traps[row][col] && (
+                        <TrapPopover
+                          key={`trap-${row}-${col}`}
+                          name={traps[row][col].name}
+                          duration={traps[row][col].duration}
+                          owner={traps[row][col].owner}
+                        />
+                      )}
+                  </div>
                 </>
               )),
             )}

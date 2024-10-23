@@ -1,4 +1,5 @@
 import { Item } from '@/api/item';
+import { PLAYER_MOCK } from './player';
 
 export const COIN_MOCK: Item = {
   type: 'COIN',
@@ -7,4 +8,7 @@ export const COIN_MOCK: Item = {
   coords: { x: 0, y: 0 },
   id: '1',
   duration: 1,
+  owner: {
+    ...PLAYER_MOCK,
+  },
 };
