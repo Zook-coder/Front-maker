@@ -5,6 +5,16 @@ export const PLAYER_MOCK: Player = {
   name: 'John',
   type: 'WEB',
   spells: [],
+  items: [
+    {
+      name: 'Coin',
+      type: 'COIN',
+      description: 'Coin description',
+      duration: 10,
+      id: '1',
+      coords: { x: 0, y: 0 },
+    },
+  ],
 };
 
 export const ONE_PLAYER_MOCK: Player[] = [{ ...PLAYER_MOCK }];
@@ -16,5 +26,15 @@ export const PLAYERS_MOCK: Player[] = [
     name: 'Dummy',
     type: 'UNITY',
     spells: [],
+    items: [
+      {
+        name: 'Coin',
+        type: 'COIN',
+        description: 'Coin description',
+        duration: 10,
+        id: '1',
+        coords: { x: 0, y: 0 },
+      },
+    ],
   },
 ];

@@ -20,6 +20,7 @@ interface Context {
   gameState: GameState;
   players: Player[];
   player?: Player;
+  map: number[][] | undefined;
   queries: Record<Query, QueryStatus>;
   setQueries: Dispatch<SetStateAction<Record<Query, QueryStatus>>>;
 }
@@ -29,11 +30,13 @@ const INITIAL_STATE: GameState = {
   loops: 0,
   timer: 0,
   startTimer: 0,
+  items: [],
 };
 
 const WebSocketContext = createContext<Context>({
   socket: undefined,
   gameState: INITIAL_STATE,
+  map: undefined,
   players: [],
   setQueries: () => {},
   queries: {
@@ -62,6 +65,7 @@ const WebSocketProvider = ({ children }: PropsWithChildren) => {
   const [socket, setSocket] = useState<Socket>();
   const [players, setPlayers] = useState<Player[]>([]);
   const [player, setPlayer] = useState<Player>();
+  const [map, setMap] = useState<number[][]>();
   const { toast } = useToast();
   const [queries, setQueries] = useState<Record<Query, QueryStatus>>({
     signup: {
@@ -85,7 +89,7 @@ const WebSocketProvider = ({ children }: PropsWithChildren) => {
 
     socket.io.on('open', () => {
       console.log('Connected!');
-
+      socket?.emit('maprequest', undefined);
       const playerId = localStorage.getItem('playerId');
 
       if (!playerId) {
@@ -93,6 +97,11 @@ const WebSocketProvider = ({ children }: PropsWithChildren) => {
       }
 
       socket?.emit('whoami', JSON.stringify({ id: playerId }));
+    });
+
+    socket.on('map', (message) => {
+      const { map }: { map: number[][] } = JSON.parse(message);
+      setMap(map);
     });
 
     socket.on('error', (message) => {
@@ -208,6 +217,7 @@ const WebSocketProvider = ({ children }: PropsWithChildren) => {
     <WebSocketContext.Provider
       value={{
         socket,
+        map,
         gameState,
         player,
         players,
