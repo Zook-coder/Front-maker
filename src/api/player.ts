@@ -12,4 +12,5 @@ export interface Player {
   speed?: number;
   spells: Spell[];
   items: Item[];
+  position?: { x: number; y: number };
 }

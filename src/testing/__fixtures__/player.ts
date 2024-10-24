@@ -19,6 +19,18 @@ export const PLAYER_MOCK: Player = {
 
 export const ONE_PLAYER_MOCK: Player[] = [{ ...PLAYER_MOCK }];
 
+export const UNITY_PLAYER_MOCK: Player = {
+  id: '3',
+  name: 'Dummy',
+  type: 'UNITY',
+  spells: [],
+  items: [],
+  position: {
+    x: 0,
+    y: 0,
+  },
+};
+
 export const PLAYERS_MOCK: Player[] = [
   { ...PLAYER_MOCK },
   {
