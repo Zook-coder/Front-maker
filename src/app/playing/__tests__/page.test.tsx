@@ -131,7 +131,7 @@ describe('<PlayingPage />', () => {
         'cast:item',
         JSON.stringify({
           id: '1',
-          x: 0,
+          x: 3,
           y: 0,
           item: 'COIN',
         }),
@@ -149,7 +149,7 @@ describe('<PlayingPage />', () => {
     serverSocket.emit('map', JSON.stringify(MAP_MOCK));
 
     await waitFor(() => {
-      expect(screen.getByTestId('0-0')).toHaveStyle({ background: 'red' });
+      expect(screen.getByTestId('3-0')).toHaveStyle({ background: 'red' });
     });
   });
 
@@ -163,10 +163,10 @@ describe('<PlayingPage />', () => {
     serverSocket.emit('map', JSON.stringify(MAP_MOCK));
 
     await waitFor(() => {
-      expect(screen.getByTestId('0-0')).toHaveStyle({ background: 'red' });
+      expect(screen.getByTestId('3-0')).toHaveStyle({ background: 'red' });
     });
 
-    await user.click(screen.getByTestId('0-0'));
+    await user.click(screen.getByTestId('3-0'));
 
     expect(screen.getByText('Case piégée')).toBeInTheDocument();
     expect(screen.getByText('00:01')).toBeInTheDocument();
@@ -176,7 +176,7 @@ describe('<PlayingPage />', () => {
     expect(screen.getByText('Coin')).toBeInTheDocument();
     expect(screen.getByText('Annuler')).toBeInTheDocument();
 
-    await user.click(screen.getByTestId('0-0'));
+    await user.click(screen.getByTestId('3-0'));
     expect(screen.queryByText('Case piégée')).not.toBeInTheDocument();
   });
 
@@ -218,8 +218,8 @@ describe('<PlayingPage />', () => {
     serverSocket.emit('player:unity', JSON.stringify(UNITY_PLAYER_MOCK));
 
     await waitFor(() => {
-      expect(screen.getByTestId('0-0')).toBeInTheDocument();
-      expect(screen.getByTestId('0-0')).toHaveStyle({ background: 'purple' });
+      expect(screen.getByTestId('3-0')).toBeInTheDocument();
+      expect(screen.getByTestId('3-0')).toHaveStyle({ background: 'purple' });
     });
   });
 });

@@ -18,6 +18,6 @@ export const tilesColor: Record<TileType | number, string> = {
   [TileType.House]: '#9ca3af',
   [TileType.Trees]: '#6b7280',
   [TileType.Lakes]: '#87ceeb',
-  [TileType.Start]: '#1f2937',
-  [TileType.End]: '#111827',
+  [TileType.Start]: 'blue',
+  [TileType.End]: 'green',
 };
