@@ -222,4 +222,31 @@ describe('<PlayingPage />', () => {
       expect(screen.getByTestId('3-0')).toHaveStyle({ background: 'purple' });
     });
   });
+
+  it('should open finished dialog if the gamestate stautus is FINISHED and redirect if game state change', async () => {
+    renderPage(<PlayingPage />);
+
+    serverSocket.emit(
+      'gamestate',
+      JSON.stringify({ ...GAME_STATE_MOCK, status: 'FINISHED' }),
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('Fin de partie !')).toBeInTheDocument();
+      expect(
+        screen.getByText(
+          'Le timer a atteint 0 secondes, la partie est finie vous allez être redirigé dans 00:05.',
+        ),
+      );
+    });
+
+    serverSocket.emit(
+      'gamestate',
+      JSON.stringify({ ...GAME_STATE_MOCK, status: 'LOBBY' }),
+    );
+
+    await waitFor(() => {
+      expect(redirect).toHaveBeenCalledWith('/');
+    });
+  });
 });

@@ -10,6 +10,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { toast } from '@/hooks/use-toast';
 import StartingDialog from '@/lobby/StartingDialog';
 import { useWebSocket } from '@/websockets/WebSocketProvider';
 import { Loader2 } from 'lucide-react';
@@ -49,6 +50,14 @@ export default function Lobby() {
           <CardFooter className="flex gap-3">
             <Button
               onClick={() => {
+                if (username.length === 0) {
+                  toast({
+                    title: 'Oops...',
+                    description: "Le nom d'utilisateur est obligatoire",
+                    variant: 'destructive',
+                  });
+                  return;
+                }
                 socket?.emit(
                   'signup',
                   JSON.stringify({

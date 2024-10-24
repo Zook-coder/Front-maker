@@ -52,7 +52,8 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
-import TrapPopover from '@/components/playing/TrapPopover';
+import TrapPopover from '@/playing/TrapPopover';
+import FinishedDialog from '@/playing/FinishedDialog';
 
 const DEFAULT_ITEM: Omit<Item, 'owner'> = {
   id: '1',
@@ -402,6 +403,7 @@ const PlayingPage = () => {
           </Form>
         </DialogContent>
       </Dialog>
+      <FinishedDialog open={gameState.status === 'FINISHED'} />
     </>
   );
 };
