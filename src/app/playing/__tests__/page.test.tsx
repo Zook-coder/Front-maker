@@ -1,5 +1,5 @@
 import { GAME_STATE_MOCK } from '@/testing/__fixtures__/gamestate';
-import { PLAYER_MOCK } from '@/testing/__fixtures__/player';
+import { PLAYER_MOCK, UNITY_PLAYER_MOCK } from '@/testing/__fixtures__/player';
 import { SPELL_MOCK } from '@/testing/__fixtures__/spell';
 import { renderPage, serverSocket, socket, user } from '@/testing/utils';
 import { screen, waitFor } from '@testing-library/dom';
@@ -208,5 +208,18 @@ describe('<PlayingPage />', () => {
 
     expect(emitSpy).toHaveBeenCalledWith('restart', undefined);
     expect(redirect).toHaveBeenCalledWith('/');
+  });
+
+  it("should mark unity player's position on the grid", async () => {
+    renderPage(<PlayingPage />);
+
+    serverSocket.emit('gamestate', JSON.stringify(GAME_STATE_MOCK));
+    serverSocket.emit('map', JSON.stringify(MAP_MOCK));
+    serverSocket.emit('player:unity', JSON.stringify(UNITY_PLAYER_MOCK));
+
+    await waitFor(() => {
+      expect(screen.getByTestId('0-0')).toBeInTheDocument();
+      expect(screen.getByTestId('0-0')).toHaveStyle({ background: 'purple' });
+    });
   });
 });

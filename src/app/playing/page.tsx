@@ -64,7 +64,8 @@ const DEFAULT_ITEM: Omit<Item, 'owner'> = {
 };
 
 const PlayingPage = () => {
-  const { gameState, map, player, devMode, socket, resetGame } = useWebSocket();
+  const { gameState, map, player, devMode, socket, unityPlayer, resetGame } =
+    useWebSocket();
   const { onSubmit, form, setTarget } = useItemForm();
   const [dialogOpened, setDialogOpened] = useState(false);
   const [hoveredPosition, setHoveredPosition] = useState<{
@@ -87,11 +88,13 @@ const PlayingPage = () => {
     const marked = gameState.items.some(
       (item) => item.coords.x === x && item.coords.y === y,
     );
+    console.log('JE SUIS MARqué');
     if (!marked) {
       setDialogOpened(true);
       setTarget({ x, y });
       return;
     }
+    console.log(openedPopover, traps);
     if (openedPopover.some((item) => item.x == x && item.y == y)) {
       setOpenedPopover((openedPopover) =>
         openedPopover.filter((item) => item.x !== x && item.y !== y),
@@ -108,6 +111,23 @@ const PlayingPage = () => {
     traps[item.coords.x][item.coords.y] = item;
     return traps;
   }, [] as Item[][]);
+
+  const getTileBackground = (row: number, col: number, map: number[][]) => {
+    if (unityPlayer?.position?.x == row && unityPlayer?.position?.y === col) {
+      return 'purple';
+    }
+    if (
+      gameState.items.some(
+        (item) => item.coords.x === row && item.coords.y === col,
+      )
+    ) {
+      return 'red';
+    }
+    if (hoveredPosition?.col === col && hoveredPosition.row === row) {
+      return 'black';
+    }
+    return tilesColor[map[row][col]] ?? 'white';
+  };
 
   return (
     <>
@@ -198,25 +218,23 @@ const PlayingPage = () => {
       </header>
       <div className="flex justify-between px-10">
         {map && (
-          <div className={`grid grid-cols-95 grid-rows-41 gap-x-0`}>
+          <div
+            className={`grid gap-x-0`}
+            style={{
+              gridTemplateColumns: `repeat(${map[0].length}, minmax(0, 1fr))`,
+              gridTemplateRows: `repeat(${map.length}, minmax(0, 1fr))`,
+            }}
+          >
             {[...Array(map.length)].map((_, row) =>
               [...Array(map[row].length)].map((_, col) => (
                 <>
                   <div
                     key={`${row}-${col}`}
                     data-testid={`${row}-${col}`}
-                    className="relative w-3 h-3 border border-border cursor-pointer"
+                    className="relative w-[1vw] h-[1vw] border border-border cursor-pointer"
                     onMouseMove={() => setHoveredPosition({ row, col })}
                     style={{
-                      background: gameState.items.some(
-                        (item) =>
-                          item.coords.x === row && item.coords.y === col,
-                      )
-                        ? 'red'
-                        : hoveredPosition?.col === col &&
-                            hoveredPosition.row === row
-                          ? 'black'
-                          : (tilesColor[map[row][col]] ?? 'white'),
+                      background: getTileBackground(row, col, map),
                     }}
                     onClick={() => handleClick(row, col)}
                   >

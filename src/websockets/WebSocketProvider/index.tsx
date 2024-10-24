@@ -21,6 +21,7 @@ interface Context {
   gameState: GameState;
   players: Player[];
   player?: Player;
+  unityPlayer?: Player;
   map: number[][] | undefined;
   queries: Record<Query, QueryStatus>;
   setQueries: Dispatch<SetStateAction<Record<Query, QueryStatus>>>;
@@ -70,6 +71,7 @@ const WebSocketProvider = ({ children }: PropsWithChildren) => {
   const [socket, setSocket] = useState<Socket>();
   const [players, setPlayers] = useState<Player[]>([]);
   const [player, setPlayer] = useState<Player>();
+  const [unityPlayer, setUnityPlayer] = useState<Player>();
   const [map, setMap] = useState<number[][]>();
   const [devMode, setDevMode] = useState(false);
   const { toast } = useToast();
@@ -212,6 +214,11 @@ const WebSocketProvider = ({ children }: PropsWithChildren) => {
       setPlayer(player);
     });
 
+    socket.on('player:unity', (message) => {
+      const player: Player = JSON.parse(message);
+      setUnityPlayer(player);
+    });
+
     socket.on('newplayer', (message) => {
       const players: Player[] = JSON.parse(message);
       const newPlayer = players[players.length - 1];
@@ -258,6 +265,7 @@ const WebSocketProvider = ({ children }: PropsWithChildren) => {
         map,
         gameState,
         player,
+        unityPlayer,
         players,
         queries,
         setQueries,
