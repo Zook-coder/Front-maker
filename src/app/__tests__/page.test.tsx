@@ -57,6 +57,11 @@ describe('<Lobby />', () => {
       JSON.stringify([{ ...PLAYER_MOCK, name: 'Dummy' }]),
     );
 
+    serverSocket.emit(
+      'signup:newplayer',
+      JSON.stringify({ ...PLAYER_MOCK, name: 'Dummy' }),
+    );
+
     await waitFor(() => {
       expect(screen.getByText('D')).toBeInTheDocument();
       expect(screen.getByText('Dummy')).toBeInTheDocument();
@@ -254,6 +259,20 @@ describe('<Lobby />', () => {
 
     await waitFor(() => {
       expect(localStorage.getItem('playerId')).toEqual('1');
+    });
+  });
+
+  it('should toast when trying to signup with empty username', async () => {
+    renderPage(<Lobby />);
+
+    await user.clear(screen.getByPlaceholderText("Boucle d'or"));
+    await user.click(screen.getByText('Envoyer'));
+
+    await waitFor(() => {
+      expect(screen.getByText('Oops...')).toBeInTheDocument();
+      expect(
+        screen.getByText("Le nom d'utilisateur est obligatoire"),
+      ).toBeInTheDocument();
     });
   });
 });

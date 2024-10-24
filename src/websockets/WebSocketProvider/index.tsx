@@ -34,6 +34,7 @@ const INITIAL_STATE: GameState = {
   loops: 0,
   timer: 0,
   startTimer: 0,
+  finishedTimer: 5,
   items: [],
 };
 
@@ -228,12 +229,14 @@ const WebSocketProvider = ({ children }: PropsWithChildren) => {
 
     socket.on('newplayer', (message) => {
       const players: Player[] = JSON.parse(message);
-      const newPlayer = players[players.length - 1];
       setPlayers(players);
+    });
 
+    socket.on('signup:newplayer', (message) => {
+      const player: Player = JSON.parse(message);
       toast({
         title: 'Un nouvel arrivant !',
-        description: `${newPlayer.name} a rejoint la partie`,
+        description: `${player.name} a rejoint la partie`,
       });
     });
 
