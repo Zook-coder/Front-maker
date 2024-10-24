@@ -53,6 +53,7 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import TrapPopover from '@/components/playing/TrapPopover';
+import HelpDialog from '@/playing/HelpDialog';
 
 const DEFAULT_ITEM: Omit<Item, 'owner'> = {
   id: '1',
@@ -88,13 +89,11 @@ const PlayingPage = () => {
     const marked = gameState.items.some(
       (item) => item.coords.x === x && item.coords.y === y,
     );
-    console.log('JE SUIS MARqué');
     if (!marked) {
       setDialogOpened(true);
       setTarget({ x, y });
       return;
     }
-    console.log(openedPopover, traps);
     if (openedPopover.some((item) => item.x == x && item.y == y)) {
       setOpenedPopover((openedPopover) =>
         openedPopover.filter((item) => item.x !== x && item.y !== y),
@@ -220,6 +219,9 @@ const PlayingPage = () => {
                   </AlertDialogContent>
                 </AlertDialog>
               )}
+            </li>
+            <li>
+              <HelpDialog />
             </li>
           </ul>
         </nav>
