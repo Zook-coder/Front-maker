@@ -113,7 +113,11 @@ const PlayingPage = () => {
   }, [] as Item[][]);
 
   const getTileBackground = (row: number, col: number, map: number[][]) => {
-    if (unityPlayer?.position?.x == row && unityPlayer?.position?.y === col) {
+    if (
+      unityPlayer?.position &&
+      Math.trunc(unityPlayer?.position?.x) === row &&
+      Math.trunc(unityPlayer?.position?.y) === col
+    ) {
       return 'purple';
     }
     if (
@@ -128,6 +132,10 @@ const PlayingPage = () => {
     }
     return tilesColor[map[row][col]] ?? 'white';
   };
+
+  useEffect(() => {
+    if (map) console.log(map);
+  }, [map]);
 
   return (
     <>
@@ -226,32 +234,41 @@ const PlayingPage = () => {
             }}
           >
             {[...Array(map.length)].map((_, row) =>
-              [...Array(map[row].length)].map((_, col) => (
-                <>
-                  <div
-                    key={`${row}-${col}`}
-                    data-testid={`${row}-${col}`}
-                    className="relative w-[1vw] h-[1vw] border border-border cursor-pointer"
-                    onMouseMove={() => setHoveredPosition({ row, col })}
-                    style={{
-                      background: getTileBackground(row, col, map),
-                    }}
-                    onClick={() => handleClick(row, col)}
-                  >
-                    {openedPopover.some(
-                      (item) => item.x == row && item.y == col,
-                    ) &&
-                      traps[row][col] && (
-                        <TrapPopover
-                          key={`trap-${row}-${col}`}
-                          name={traps[row][col].name}
-                          duration={traps[row][col].duration}
-                          owner={traps[row][col].owner}
-                        />
-                      )}
-                  </div>
-                </>
-              )),
+              [...Array(map[row].length)].map((_, col) => {
+                return (
+                  <>
+                    <div
+                      key={`${row}-${col}`}
+                      data-testid={`${row}-${col}`}
+                      className="relative w-[1vw] h-[1vw] border border-border cursor-pointer"
+                      onMouseMove={() =>
+                        setHoveredPosition({ row: map.length - 1 - row, col })
+                      }
+                      style={{
+                        background: getTileBackground(
+                          map.length - 1 - row,
+                          col,
+                          map,
+                        ),
+                      }}
+                      onClick={() => handleClick(map.length - 1 - row, col)}
+                    >
+                      {openedPopover.some(
+                        (item) =>
+                          item.x == map.length - 1 - row && item.y == col,
+                      ) &&
+                        traps[map.length - 1 - row][col] && (
+                          <TrapPopover
+                            key={`trap-${map.length - 1 - row}-${col}`}
+                            name={traps[map.length - 1 - row][col].name}
+                            duration={traps[map.length - 1 - row][col].duration}
+                            owner={traps[map.length - 1 - row][col].owner}
+                          />
+                        )}
+                    </div>
+                  </>
+                );
+              }),
             )}
           </div>
         )}

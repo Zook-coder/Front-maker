@@ -106,6 +106,7 @@ const WebSocketProvider = ({ children }: PropsWithChildren) => {
   };
 
   const connectWebSocketClient = () => {
+    console.log(process.env.NEXT_PUBLIC_WEBSOCKET_URL);
     const socket = io(
       process.env.NEXT_PUBLIC_WEBSOCKET_URL ?? 'http://localhost:3001',
       {
@@ -216,7 +217,13 @@ const WebSocketProvider = ({ children }: PropsWithChildren) => {
 
     socket.on('player:unity', (message) => {
       const player: Player = JSON.parse(message);
-      setUnityPlayer(player);
+      setUnityPlayer({
+        ...player,
+        position: {
+          x: player.position?.y ?? 0,
+          y: player.position?.x ?? 0,
+        },
+      });
     });
 
     socket.on('newplayer', (message) => {
