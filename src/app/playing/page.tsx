@@ -52,8 +52,9 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
+import TrapPopover from '@/components/playing/TrapPopover';
 
-const DEFAULT_ITEM: Item = {
+const DEFAULT_ITEM: Omit<Item, 'owner'> = {
   id: '1',
   type: 'COIN',
   description: 'A coin that gives points to the player',
@@ -71,7 +72,11 @@ const PlayingPage = () => {
     row: number;
     col: number;
   }>();
-  const [selectedItem, setSelectedItem] = useState<Item>(DEFAULT_ITEM);
+  const [selectedItem, setSelectedItem] =
+    useState<Omit<Item, 'owner'>>(DEFAULT_ITEM);
+  const [openedPopover, setOpenedPopover] = useState<
+    { x: number; y: number }[]
+  >([]);
 
   useEffect(() => {
     if (gameState.status !== 'PLAYING') {
@@ -80,9 +85,32 @@ const PlayingPage = () => {
   }, [gameState]);
 
   const handleClick = (x: number, y: number) => {
-    setDialogOpened(true);
-    setTarget({ x, y });
+    const marked = gameState.items.some(
+      (item) => item.coords.x === x && item.coords.y === y,
+    );
+    console.log('JE SUIS MARqué');
+    if (!marked) {
+      setDialogOpened(true);
+      setTarget({ x, y });
+      return;
+    }
+    console.log(openedPopover, traps);
+    if (openedPopover.some((item) => item.x == x && item.y == y)) {
+      setOpenedPopover((openedPopover) =>
+        openedPopover.filter((item) => item.x !== x && item.y !== y),
+      );
+    } else {
+      setOpenedPopover((openedPopover) => [...openedPopover, { x, y }]);
+    }
   };
+
+  const traps = gameState.items.reduce((traps, item) => {
+    if (!traps[item.coords.x]) {
+      traps[item.coords.x] = [];
+    }
+    traps[item.coords.x][item.coords.y] = item;
+    return traps;
+  }, [] as Item[][]);
 
   const getTileBackground = (row: number, col: number, map: number[][]) => {
     if (unityPlayer?.position?.x == row && unityPlayer?.position?.y === col) {
@@ -190,20 +218,38 @@ const PlayingPage = () => {
       </header>
       <div className="flex justify-between px-10">
         {map && (
-          <div className={`grid grid-cols-95 grid-rows-41 gap-x-0`}>
+          <div
+            className={`grid gap-x-0`}
+            style={{
+              gridTemplateColumns: `repeat(${map[0].length}, minmax(0, 1fr))`,
+              gridTemplateRows: `repeat(${map.length}, minmax(0, 1fr))`,
+            }}
+          >
             {[...Array(map.length)].map((_, row) =>
               [...Array(map[row].length)].map((_, col) => (
                 <>
                   <div
                     key={`${row}-${col}`}
                     data-testid={`${row}-${col}`}
-                    className="w-3 h-3 border border-border cursor-pointer"
+                    className="relative w-[1vw] h-[1vw] border border-border cursor-pointer"
                     onMouseMove={() => setHoveredPosition({ row, col })}
                     style={{
                       background: getTileBackground(row, col, map),
                     }}
                     onClick={() => handleClick(row, col)}
-                  />
+                  >
+                    {openedPopover.some(
+                      (item) => item.x == row && item.y == col,
+                    ) &&
+                      traps[row][col] && (
+                        <TrapPopover
+                          key={`trap-${row}-${col}`}
+                          name={traps[row][col].name}
+                          duration={traps[row][col].duration}
+                          owner={traps[row][col].owner}
+                        />
+                      )}
+                  </div>
                 </>
               )),
             )}

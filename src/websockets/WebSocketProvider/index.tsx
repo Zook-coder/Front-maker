@@ -1,6 +1,7 @@
 'use client';
 import { GameError, KNOWN_ERRORS } from '@/api/gameerror';
 import { GameState } from '@/api/gamestate';
+import { Item } from '@/api/item';
 import { Player } from '@/api/player';
 import { Query, QueryStatus } from '@/api/query';
 import { useToast } from '@/hooks/use-toast';
@@ -193,6 +194,14 @@ const WebSocketProvider = ({ children }: PropsWithChildren) => {
     socket.on('devmode', (msg) => {
       const { dev }: { dev: boolean } = JSON.parse(msg);
       setDevMode(dev);
+    });
+
+    socket.on('newitem', (msg) => {
+      const item: Item = JSON.parse(msg);
+      toast({
+        title: 'Un nouveau piège est apparu !',
+        description: `${item.owner.name} a posé un piège sur la carte`,
+      });
     });
 
     socket.on('lobbyplayers', (message) => {

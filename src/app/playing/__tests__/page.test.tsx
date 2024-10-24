@@ -153,6 +153,33 @@ describe('<PlayingPage />', () => {
     });
   });
 
+  it('should open/close trap popover when clicking on a marked tile', async () => {
+    renderPage(<PlayingPage />);
+
+    serverSocket.emit(
+      'gamestate',
+      JSON.stringify({ ...GAME_STATE_MOCK, items: [COIN_MOCK] }),
+    );
+    serverSocket.emit('map', JSON.stringify(MAP_MOCK));
+
+    await waitFor(() => {
+      expect(screen.getByTestId('0-0')).toHaveStyle({ background: 'red' });
+    });
+
+    await user.click(screen.getByTestId('0-0'));
+
+    expect(screen.getByText('Case piégée')).toBeInTheDocument();
+    expect(screen.getByText('00:01')).toBeInTheDocument();
+    expect(screen.getByText('Posé par')).toBeInTheDocument();
+    expect(screen.getByText('John')).toBeInTheDocument();
+    expect(screen.getByText('Piège')).toBeInTheDocument();
+    expect(screen.getByText('Coin')).toBeInTheDocument();
+    expect(screen.getByText('Annuler')).toBeInTheDocument();
+
+    await user.click(screen.getByTestId('0-0'));
+    expect(screen.queryByText('Case piégée')).not.toBeInTheDocument();
+  });
+
   it('should show restart button if dev mode is enabled', async () => {
     renderPage(<PlayingPage />);
 

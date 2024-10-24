@@ -3,6 +3,7 @@ import {
   UNKNOWN_PLAYER_ERROR_MOCK,
   USERNAME_ALREADY_TAKEN_ERROR_MOCK,
 } from '@/testing/__fixtures__/gameerrors';
+import { COIN_MOCK } from '@/testing/__fixtures__/item';
 import { renderPage, serverSocket, socket } from '@/testing/utils';
 import { screen, waitFor } from '@testing-library/dom';
 
@@ -92,6 +93,21 @@ describe('<WebSocketProvider />', () => {
 
     await waitFor(() => {
       expect(consoleSpy).toHaveBeenCalledWith('disconnected!');
+    });
+  });
+
+  it('should toast when receiving a new item', async () => {
+    renderPage(<MockComponent />);
+
+    serverSocket.emit('newitem', JSON.stringify(COIN_MOCK));
+
+    await waitFor(() => {
+      expect(
+        screen.getByText('Un nouveau piège est apparu !'),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText('John a posé un piège sur la carte'),
+      ).toBeInTheDocument();
     });
   });
 });
