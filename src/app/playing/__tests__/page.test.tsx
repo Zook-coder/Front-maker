@@ -11,6 +11,7 @@ import { redirect } from 'next/navigation';
 describe('<PlayingPage />', () => {
   it('should render successfully', async () => {
     renderPage(<PlayingPage />);
+    await user.click(screen.getByText('Compris !'));
     serverSocket.emit(
       'playerInfo',
       JSON.stringify({ ...PLAYER_MOCK, role: 'Protector' }),
@@ -38,6 +39,8 @@ describe('<PlayingPage />', () => {
 
   it('should open spells sheet when cast spell button is clicked', async () => {
     renderPage(<PlayingPage />);
+    await user.click(screen.getByText('Compris !'));
+
     serverSocket.emit(
       'playerInfo',
       JSON.stringify({
@@ -65,6 +68,8 @@ describe('<PlayingPage />', () => {
 
   it('should open spells sheet when cast spell button is clicked', async () => {
     renderPage(<PlayingPage />);
+    await user.click(screen.getByText('Compris !'));
+
     serverSocket.emit(
       'playerInfo',
       JSON.stringify({
@@ -92,6 +97,8 @@ describe('<PlayingPage />', () => {
 
   it('should open attack dialog when tile is pressed', async () => {
     renderPage(<PlayingPage />);
+    await user.click(screen.getByText('Compris !'));
+
     serverSocket.emit('gamestate', JSON.stringify(GAME_STATE_MOCK));
     serverSocket.emit('map', JSON.stringify(MAP_MOCK));
     serverSocket.emit('playerInfo', JSON.stringify(PLAYER_MOCK));
@@ -116,6 +123,8 @@ describe('<PlayingPage />', () => {
   it('should send the trap request when clicking the submit button in the attack dialog', async () => {
     const emitSpy = jest.spyOn(socket, 'emit');
     renderPage(<PlayingPage />);
+    await user.click(screen.getByText('Compris !'));
+
     serverSocket.emit('playerInfo', JSON.stringify(PLAYER_MOCK));
     serverSocket.emit('gamestate', JSON.stringify(GAME_STATE_MOCK));
     serverSocket.emit('map', JSON.stringify(MAP_MOCK));
@@ -141,6 +150,7 @@ describe('<PlayingPage />', () => {
 
   it('should mark trapped tiles according to the game state', async () => {
     renderPage(<PlayingPage />);
+    await user.click(screen.getByText('Compris !'));
 
     serverSocket.emit(
       'gamestate',
@@ -155,6 +165,7 @@ describe('<PlayingPage />', () => {
 
   it('should open/close trap popover when clicking on a marked tile', async () => {
     renderPage(<PlayingPage />);
+    await user.click(screen.getByText('Compris !'));
 
     serverSocket.emit(
       'gamestate',
@@ -182,6 +193,7 @@ describe('<PlayingPage />', () => {
 
   it('should show restart button if dev mode is enabled', async () => {
     renderPage(<PlayingPage />);
+    await user.click(screen.getByText('Compris !'));
 
     serverSocket.emit('devmode', JSON.stringify({ dev: true }));
 
@@ -193,6 +205,7 @@ describe('<PlayingPage />', () => {
   it('should restart the game if the restart button is pressed', async () => {
     const emitSpy = jest.spyOn(socket, 'emit');
     renderPage(<PlayingPage />);
+    await user.click(screen.getByText('Compris !'));
 
     serverSocket.emit('devmode', JSON.stringify({ dev: true }));
 
@@ -212,6 +225,7 @@ describe('<PlayingPage />', () => {
 
   it("should mark unity player's position on the grid", async () => {
     renderPage(<PlayingPage />);
+    await user.click(screen.getByText('Compris !'));
 
     serverSocket.emit('gamestate', JSON.stringify(GAME_STATE_MOCK));
     serverSocket.emit('map', JSON.stringify(MAP_MOCK));
