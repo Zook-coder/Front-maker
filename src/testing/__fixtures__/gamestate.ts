@@ -7,4 +7,5 @@ export const GAME_STATE_MOCK: GameState = {
   startTimer: 0,
   timer: 0,
   items: [],
+  eventTimer: 5,
 };

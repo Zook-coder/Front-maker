@@ -35,6 +35,7 @@ const INITIAL_STATE: GameState = {
   timer: 0,
   startTimer: 0,
   finishedTimer: 5,
+  eventTimer: 5,
   items: [],
 };
 

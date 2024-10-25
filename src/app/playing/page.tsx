@@ -57,6 +57,7 @@ import HelpDialog from '@/playing/HelpDialog';
 import FinishedDialog from '@/playing/FinishedDialog';
 import { toast } from '@/hooks/use-toast';
 import UnityPlayerCard from '@/playing/UnityPlayerCard';
+import RandomNumberEventDialog from '@/events/RandomNumberEventDialog';
 
 const DEFAULT_ITEM: Omit<Item, 'owner'> = {
   id: '1',
@@ -83,7 +84,7 @@ const PlayingPage = () => {
   >([]);
 
   useEffect(() => {
-    if (gameState.status !== 'PLAYING') {
+    if (gameState.status === 'LOBBY') {
       redirect('/');
     }
   }, [gameState]);
@@ -315,6 +316,10 @@ const PlayingPage = () => {
                     </span>
                     <span>00:01</span>
                   </li>
+                  <li className="flex items-center justify-between">
+                    <span className="text-muted-foreground">Event dans</span>
+                    <span>{convertElapsedTime(gameState.eventTimer)}</span>
+                  </li>
                 </ul>
               </div>
             </CardContent>
@@ -391,6 +396,9 @@ const PlayingPage = () => {
         </DialogContent>
       </Dialog>
       <FinishedDialog open={gameState.status === 'FINISHED'} />
+      {gameState.currentEvent?.type === 'RANDOM_NUMBER' && (
+        <RandomNumberEventDialog event={gameState.currentEvent} />
+      )}
     </>
   );
 };
