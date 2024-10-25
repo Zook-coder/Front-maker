@@ -262,16 +262,51 @@ describe('<Lobby />', () => {
     });
   });
 
-  it('should toast when trying to signup with empty username', async () => {
+  it('should display an error message if the username is too short', async () => {
     renderPage(<Lobby />);
 
     await user.clear(screen.getByPlaceholderText("Boucle d'or"));
+    await user.type(screen.getByPlaceholderText("Boucle d'or"), 'A');
     await user.click(screen.getByText('Envoyer'));
 
     await waitFor(() => {
-      expect(screen.getByText('Oops...')).toBeInTheDocument();
       expect(
-        screen.getByText("Le nom d'utilisateur est obligatoire"),
+        screen.getByText(
+          "Le nom d'utilisateur doit contenir au moins 2 caractères.",
+        ),
+      ).toBeInTheDocument();
+    });
+  });
+
+  it('should display an error message if the username is too long', async () => {
+    renderPage(<Lobby />);
+
+    await user.clear(screen.getByPlaceholderText("Boucle d'or"));
+    await user.type(
+      screen.getByPlaceholderText("Boucle d'or"),
+      'AAAAAAAAAAAAAAAAAAAAAAAAA',
+    );
+    await user.click(screen.getByText('Envoyer'));
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(
+          "Le nom d'utilisateur ne peut pas dépasser 20 caractères.",
+        ),
+      ).toBeInTheDocument();
+    });
+  });
+
+  it('should display an error message if the username is too long', async () => {
+    renderPage(<Lobby />);
+
+    await user.clear(screen.getByPlaceholderText("Boucle d'or"));
+    await user.type(screen.getByPlaceholderText("Boucle d'or"), '          ');
+    await user.click(screen.getByText('Envoyer'));
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Le nom d'utilisateur a un format invalide"),
       ).toBeInTheDocument();
     });
   });

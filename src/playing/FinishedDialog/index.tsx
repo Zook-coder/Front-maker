@@ -15,10 +15,11 @@ interface Props {
 }
 
 const FinishedDialog = ({ open }: Props) => {
-  const { gameState } = useWebSocket();
+  const { gameState, resetGame } = useWebSocket();
 
   useEffect(() => {
     if (gameState.finishedTimer <= 0) {
+      resetGame();
       redirect('/');
     }
   }, [gameState]);

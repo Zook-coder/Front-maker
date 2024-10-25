@@ -9,18 +9,25 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { toast } from '@/hooks/use-toast';
+import { useUsernameForm } from '@/hooks/useUsernameForm';
 import StartingDialog from '@/lobby/StartingDialog';
 import { useWebSocket } from '@/websockets/WebSocketProvider';
 import { Loader2 } from 'lucide-react';
 import { redirect } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 
 export default function Lobby() {
   const { socket, players, player, gameState, queries, setQueries } =
     useWebSocket();
-  const [username, setUsername] = useState('');
+  const { form, onSubmit } = useUsernameForm();
 
   useEffect(() => {
     if (gameState.status === 'PLAYING') {
@@ -38,66 +45,59 @@ export default function Lobby() {
               Ce pseudo fera office de nom {"d'affichage"} lors de la partie.
             </CardDescription>
           </CardHeader>
-          <CardContent>
-            <Input
-              onChange={(e) => {
-                setUsername(e.target.value);
-              }}
-              placeholder={player?.name ?? "Boucle d'or"}
-              disabled={players.some((item) => item.id === player?.id)}
-            />
-          </CardContent>
-          <CardFooter className="flex gap-3">
-            <Button
-              onClick={() => {
-                if (username.length === 0) {
-                  toast({
-                    title: 'Oops...',
-                    description: "Le nom d'utilisateur est obligatoire",
-                    variant: 'destructive',
-                  });
-                  return;
-                }
-                socket?.emit(
-                  'signup',
-                  JSON.stringify({
-                    name: username,
-                    type: 'WEB',
-                  }),
-                );
-                setQueries({
-                  ...queries,
-                  signup: {
-                    loading: true,
-                  },
-                });
-              }}
-              disabled={
-                players.some((item) => item.id === player?.id) ||
-                queries.signup.loading
-              }
-            >
-              {queries.signup.loading && (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              )}
-              Envoyer
-            </Button>
-            {players.some((item) => item.name === player?.name) && (
-              <Button
-                variant="destructive"
-                onClick={() => {
-                  socket?.emit(
-                    'logout',
-                    JSON.stringify({
-                      id: player?.id,
-                    }),
-                  );
-                }}
-              >
-                Quitter
-              </Button>
-            )}
-          </CardFooter>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)}>
+              <CardContent>
+                <FormField
+                  control={form.control}
+                  name="username"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          placeholder={player?.name ?? "Boucle d'or"}
+                          disabled={players.some(
+                            (item) => item.id === player?.id,
+                          )}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </CardContent>
+              <CardFooter className="flex gap-3">
+                <Button
+                  disabled={
+                    players.some((item) => item.id === player?.id) ||
+                    queries.signup.loading
+                  }
+                >
+                  {queries.signup.loading && (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  )}
+                  Envoyer
+                </Button>
+                {players.some((item) => item.name === player?.name) && (
+                  <Button
+                    type="submit"
+                    variant="destructive"
+                    onClick={() => {
+                      socket?.emit(
+                        'logout',
+                        JSON.stringify({
+                          id: player?.id,
+                        }),
+                      );
+                    }}
+                  >
+                    Quitter
+                  </Button>
+                )}
+              </CardFooter>
+            </form>
+          </Form>
         </Card>
         <Card className="absolute right-0 h-full flex flex-col justify-between">
           <div className={`${players.length === 0 && 'pr-16'}`}>
