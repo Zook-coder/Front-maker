@@ -66,6 +66,37 @@ describe('<PlayingPage />', () => {
     });
   });
 
+  it('should emit cast:spell message when clicking on a ready spell', async () => {
+    const emitSpy = jest.spyOn(socket, 'emit');
+    renderPage(<PlayingPage />);
+    await user.click(screen.getByText('Compris !'));
+    serverSocket.emit(
+      'playerInfo',
+      JSON.stringify({
+        ...PLAYER_MOCK,
+        role: 'Protector',
+        spells: [{ ...SPELL_MOCK, currentCooldown: 0 }],
+      }),
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('Lancer un sort')).toBeInTheDocument();
+    });
+
+    await user.click(screen.getByText('Lancer un sort'));
+
+    await waitFor(() => {
+      expect(screen.getByText('Slow Mode')).toBeInTheDocument();
+      expect(screen.getByText('Prêt')).toBeInTheDocument();
+    });
+
+    await user.click(screen.getByText('Prêt'));
+    expect(emitSpy).toHaveBeenCalledWith(
+      'cast:spell',
+      JSON.stringify({ playerId: '1', id: 0 }),
+    );
+  });
+
   it('should open spells sheet when cast spell button is clicked', async () => {
     renderPage(<PlayingPage />);
     await user.click(screen.getByText('Compris !'));
@@ -92,6 +123,7 @@ describe('<PlayingPage />', () => {
       expect(screen.getByText('Durée: 10s')).toBeInTheDocument();
       expect(screen.getByText('SlowMode description')).toBeInTheDocument();
       expect(screen.getByText('00:10')).toBeInTheDocument();
+      expect(screen.getByText('00:10')).toBeDisabled();
     });
   });
 
