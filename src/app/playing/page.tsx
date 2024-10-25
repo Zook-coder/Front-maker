@@ -55,6 +55,7 @@ import {
 import TrapPopover from '@/playing/TrapPopover';
 import HelpDialog from '@/playing/HelpDialog';
 import FinishedDialog from '@/playing/FinishedDialog';
+import { toast } from '@/hooks/use-toast';
 
 const DEFAULT_ITEM: Omit<Item, 'owner'> = {
   id: '1',
@@ -87,6 +88,14 @@ const PlayingPage = () => {
   }, [gameState]);
 
   const handleClick = (x: number, y: number) => {
+    if (!player) {
+      toast({
+        title: 'Oops...',
+        description: 'Il faut être un joueur pour déclencher des pièges',
+      });
+      return;
+    }
+
     const marked = gameState.items.some(
       (item) => item.coords.x === x && item.coords.y === y,
     );
@@ -133,64 +142,62 @@ const PlayingPage = () => {
     return tilesColor[map[row][col]] ?? 'white';
   };
 
-  useEffect(() => {
-    if (map) console.log(map);
-  }, [map]);
-
   return (
     <>
       <header className="flex items-center py-2 px-10 justify-between border-b">
         <div className="flex items-center gap-4">
           <Avatar>
             <AvatarFallback>
-              {player?.name.charAt(0).toUpperCase()}
+              {player ? player.name.charAt(0).toUpperCase() : 'D'}
             </AvatarFallback>
           </Avatar>
           <div className="flex flex-col gap-0">
             <div className="flex items-center gap-2">
-              <span className="font-medium">{player?.name}</span>
+              <span className="font-medium">{player?.name ?? 'Dummy'}</span>
             </div>
             <span className="text-xs text-muted-foreground">
-              {player?.role}
+              {player?.role ?? 'Spectateur'}
             </span>
           </div>
         </div>
         <nav>
           <ul className="flex items-center gap-4">
-            <li>
-              <Sheet>
-                <SheetTrigger asChild>
-                  <Button>Lancer un sort</Button>
-                </SheetTrigger>
-                <SheetContent>
-                  <SheetHeader>
-                    <SheetTitle>Manuel des sorts</SheetTitle>
-                    <SheetDescription>
-                      Lorem ipsum dolor, sit amet consectetur adipisicing elit.
-                      Voluptate, laborum.
-                    </SheetDescription>
-                  </SheetHeader>
-                  <div className="flex flex-col mt-4">
+            {player && (
+              <li>
+                <Sheet>
+                  <SheetTrigger asChild>
+                    <Button>Lancer un sort</Button>
+                  </SheetTrigger>
+                  <SheetContent>
+                    <SheetHeader>
+                      <SheetTitle>Manuel des sorts</SheetTitle>
+                      <SheetDescription>
+                        Lorem ipsum dolor, sit amet consectetur adipisicing
+                        elit. Voluptate, laborum.
+                      </SheetDescription>
+                    </SheetHeader>
                     <div className="flex flex-col mt-4">
-                      {player?.spells.map((spell, index) => (
-                        <>
-                          <SpellCard
-                            key={index}
-                            id={index}
-                            name={spell.name}
-                            description={spell.description}
-                            duration={spell.duration}
-                            currentCooldown={spell.currentCooldown}
-                            type={spell.type}
-                          />
-                          <Separator className="my-2" />
-                        </>
-                      ))}
+                      <div className="flex flex-col mt-4">
+                        {player?.spells.map((spell, index) => (
+                          <>
+                            <SpellCard
+                              key={index}
+                              id={index}
+                              name={spell.name}
+                              description={spell.description}
+                              duration={spell.duration}
+                              currentCooldown={spell.currentCooldown}
+                              type={spell.type}
+                            />
+                            <Separator className="my-2" />
+                          </>
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                </SheetContent>
-              </Sheet>
-            </li>
+                  </SheetContent>
+                </Sheet>
+              </li>
+            )}
             <li>
               {devMode && (
                 <AlertDialog>
@@ -243,7 +250,7 @@ const PlayingPage = () => {
                     <div
                       key={`${row}-${col}`}
                       data-testid={`${row}-${col}`}
-                      className="relative w-[1vw] h-[1vw] border border-border cursor-pointer"
+                      className="relative w-[1.2vw] h-[1.2vw] border border-border cursor-pointer"
                       onMouseMove={() =>
                         setHoveredPosition({ row: map.length - 1 - row, col })
                       }
@@ -260,6 +267,7 @@ const PlayingPage = () => {
                         (item) =>
                           item.x == map.length - 1 - row && item.y == col,
                       ) &&
+                        traps[map.length - 1 - row] &&
                         traps[map.length - 1 - row][col] && (
                           <TrapPopover
                             key={traps[map.length - 1 - row][col].id}
@@ -269,6 +277,9 @@ const PlayingPage = () => {
                             owner={traps[map.length - 1 - row][col].owner}
                             row={map.length - 1 - row}
                             col={col}
+                            onClose={() =>
+                              handleClick(map.length - 1 - row, col)
+                            }
                           />
                         )}
                     </div>

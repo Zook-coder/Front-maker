@@ -195,6 +195,27 @@ describe('<PlayingPage />', () => {
     });
   });
 
+  it('should toast when trying to click tile if not a player', async () => {
+    renderPage(<PlayingPage />);
+    await user.click(screen.getByText('Compris !'));
+
+    serverSocket.emit(
+      'gamestate',
+      JSON.stringify({ ...GAME_STATE_MOCK, items: [COIN_MOCK] }),
+    );
+    serverSocket.emit('map', JSON.stringify(MAP_MOCK));
+
+    await waitFor(() => {
+      expect(screen.getByTestId('3-0')).toHaveStyle({ background: 'red' });
+    });
+    await user.click(screen.getByTestId('3-0'));
+
+    expect(screen.getByText('Oops...')).toBeInTheDocument();
+    expect(
+      screen.getByText('Il faut être un joueur pour déclencher des pièges'),
+    ).toBeInTheDocument();
+  });
+
   it('should open/close trap popover when clicking on a marked tile', async () => {
     renderPage(<PlayingPage />);
     await user.click(screen.getByText('Compris !'));
@@ -204,6 +225,10 @@ describe('<PlayingPage />', () => {
       JSON.stringify({ ...GAME_STATE_MOCK, items: [COIN_MOCK] }),
     );
     serverSocket.emit('map', JSON.stringify(MAP_MOCK));
+    serverSocket.emit(
+      'playerInfo',
+      JSON.stringify({ ...PLAYER_MOCK, name: 'Dummy' }),
+    );
 
     await waitFor(() => {
       expect(screen.getByTestId('3-0')).toHaveStyle({ background: 'red' });
@@ -219,7 +244,7 @@ describe('<PlayingPage />', () => {
     expect(screen.getByText('Coin')).toBeInTheDocument();
     expect(screen.getByText('Coordonnées')).toBeInTheDocument();
     expect(screen.getByText('(0,0)')).toBeInTheDocument();
-    expect(screen.getByText('Annuler')).toBeInTheDocument();
+    expect(screen.getByText('Annuler le piège')).toBeInTheDocument();
 
     await user.click(screen.getByTestId('3-0'));
     expect(screen.queryByText('Case piégée')).not.toBeInTheDocument();
@@ -244,7 +269,7 @@ describe('<PlayingPage />', () => {
     await user.click(screen.getByTestId('3-0'));
 
     expect(screen.getByText('Case piégée')).toBeInTheDocument();
-    await user.click(screen.getByText('Annuler'));
+    await user.click(screen.getByText('Annuler le piège'));
 
     expect(emitSpy).toHaveBeenCalledWith(
       'item:cancel',

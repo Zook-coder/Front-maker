@@ -107,7 +107,6 @@ const WebSocketProvider = ({ children }: PropsWithChildren) => {
   };
 
   const connectWebSocketClient = () => {
-    console.log(process.env.NEXT_PUBLIC_WEBSOCKET_URL);
     const socket = io(
       process.env.NEXT_PUBLIC_WEBSOCKET_URL ?? 'http://localhost:3001',
       {
