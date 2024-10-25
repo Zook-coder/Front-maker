@@ -18,7 +18,7 @@ const FinishedDialog = ({ open }: Props) => {
   const { gameState } = useWebSocket();
 
   useEffect(() => {
-    if (gameState.status !== 'FINISHED') {
+    if (gameState.finishedTimer <= 0) {
       redirect('/');
     }
   }, [gameState]);
