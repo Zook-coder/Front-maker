@@ -256,7 +256,7 @@ describe('<PlayingPage />', () => {
 
     serverSocket.emit(
       'gamestate',
-      JSON.stringify({ ...GAME_STATE_MOCK, status: 'LOBBY' }),
+      JSON.stringify({ ...GAME_STATE_MOCK, finishedTimer: 0, status: 'LOBBY' }),
     );
 
     await waitFor(() => {
