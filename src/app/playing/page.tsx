@@ -52,8 +52,8 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
-import HelpDialog from '@/playing/HelpDialog';
 import TrapPopover from '@/playing/TrapPopover';
+import HelpDialog from '@/playing/HelpDialog';
 import FinishedDialog from '@/playing/FinishedDialog';
 
 const DEFAULT_ITEM: Omit<Item, 'owner'> = {
@@ -262,10 +262,13 @@ const PlayingPage = () => {
                       ) &&
                         traps[map.length - 1 - row][col] && (
                           <TrapPopover
-                            key={`trap-${map.length - 1 - row}-${col}`}
+                            key={traps[map.length - 1 - row][col].id}
+                            id={traps[map.length - 1 - row][col].id}
                             name={traps[map.length - 1 - row][col].name}
                             duration={traps[map.length - 1 - row][col].duration}
                             owner={traps[map.length - 1 - row][col].owner}
+                            row={map.length - 1 - row}
+                            col={col}
                           />
                         )}
                     </div>

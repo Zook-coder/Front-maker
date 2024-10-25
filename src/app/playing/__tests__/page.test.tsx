@@ -217,10 +217,44 @@ describe('<PlayingPage />', () => {
     expect(screen.getByText('John')).toBeInTheDocument();
     expect(screen.getByText('Piège')).toBeInTheDocument();
     expect(screen.getByText('Coin')).toBeInTheDocument();
+    expect(screen.getByText('Coordonnées')).toBeInTheDocument();
+    expect(screen.getByText('(0,0)')).toBeInTheDocument();
     expect(screen.getByText('Annuler')).toBeInTheDocument();
 
     await user.click(screen.getByTestId('3-0'));
     expect(screen.queryByText('Case piégée')).not.toBeInTheDocument();
+  });
+
+  it('should open/close trap popover when clicking on a marked tile', async () => {
+    renderPage(<PlayingPage />);
+    const emitSpy = jest.spyOn(socket, 'emit');
+    await user.click(screen.getByText('Compris !'));
+
+    serverSocket.emit(
+      'gamestate',
+      JSON.stringify({ ...GAME_STATE_MOCK, items: [COIN_MOCK] }),
+    );
+    serverSocket.emit('map', JSON.stringify(MAP_MOCK));
+    serverSocket.emit('playerInfo', JSON.stringify(PLAYER_MOCK));
+
+    await waitFor(() => {
+      expect(screen.getByTestId('3-0')).toHaveStyle({ background: 'red' });
+    });
+
+    await user.click(screen.getByTestId('3-0'));
+
+    expect(screen.getByText('Case piégée')).toBeInTheDocument();
+    await user.click(screen.getByText('Annuler'));
+
+    expect(emitSpy).toHaveBeenCalledWith(
+      'item:cancel',
+      JSON.stringify({
+        itemId: '1',
+        id: '1',
+        row: 0,
+        col: 0,
+      }),
+    );
   });
 
   it('should show restart button if dev mode is enabled', async () => {
