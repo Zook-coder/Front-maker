@@ -8,6 +8,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { convertElapsedTime } from '@/lib/utils';
+import { useWebSocket } from '@/websockets/WebSocketProvider';
 import React from 'react';
 
 interface Props {
@@ -20,12 +21,14 @@ interface Props {
 }
 
 const SpellCard = ({
+  id,
   name,
   description,
   currentCooldown,
   duration,
   type,
 }: Props) => {
+  const { socket, player } = useWebSocket();
   return (
     <Card className="border-transparent shadow-none px-0">
       <CardHeader className="px-0 py-2">
@@ -39,7 +42,19 @@ const SpellCard = ({
       </CardHeader>
       <CardDescription>{description}</CardDescription>
       <CardFooter className="px-0 py-4 flex justify-end">
-        <Button className="w-full">
+        <Button
+          className="w-full"
+          disabled={currentCooldown !== 0}
+          onClick={() =>
+            socket?.emit(
+              'cast:spell',
+              JSON.stringify({
+                playerId: player?.id,
+                id,
+              }),
+            )
+          }
+        >
           {currentCooldown === 0 ? 'Prêt' : convertElapsedTime(currentCooldown)}
         </Button>
       </CardFooter>
