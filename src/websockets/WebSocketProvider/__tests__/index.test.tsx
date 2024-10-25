@@ -4,6 +4,7 @@ import {
   USERNAME_ALREADY_TAKEN_ERROR_MOCK,
 } from '@/testing/__fixtures__/gameerrors';
 import { COIN_MOCK } from '@/testing/__fixtures__/item';
+import { PLAYER_MOCK } from '@/testing/__fixtures__/player';
 import { renderPage, serverSocket, socket } from '@/testing/utils';
 import { screen, waitFor } from '@testing-library/dom';
 
@@ -107,6 +108,31 @@ describe('<WebSocketProvider />', () => {
       ).toBeInTheDocument();
       expect(
         screen.getByText('John a posé un piège sur la carte'),
+      ).toBeInTheDocument();
+    });
+  });
+
+  it('should toast on item cancel success', async () => {
+    renderPage(<MockComponent />);
+    serverSocket.emit(
+      'item:cancel:success',
+      JSON.stringify({ ...PLAYER_MOCK }),
+    );
+    await waitFor(() => {
+      expect(screen.getByText('Bien reçu !')).toBeInTheDocument();
+      expect(
+        screen.getByText('Le piège de John a été désactivé avec succès'),
+      ).toBeInTheDocument();
+    });
+  });
+
+  it('should toast on item canceled', async () => {
+    renderPage(<MockComponent />);
+    serverSocket.emit('item:canceled', JSON.stringify({ ...PLAYER_MOCK }));
+    await waitFor(() => {
+      expect(screen.getByText('Attention !')).toBeInTheDocument();
+      expect(
+        screen.getByText('John a désactivé un de vos pièges'),
       ).toBeInTheDocument();
     });
   });

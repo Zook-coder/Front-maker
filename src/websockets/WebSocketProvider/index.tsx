@@ -172,6 +172,24 @@ const WebSocketProvider = ({ children }: PropsWithChildren) => {
       setGameState(state);
     });
 
+    socket.on('item:cancel:success', (message) => {
+      const player: Player | undefined = JSON.parse(message);
+      if (player) {
+        toast({
+          title: 'Bien reçu !',
+          description: `Le piège de ${player.name} a été désactivé avec succès`,
+        });
+      }
+    });
+
+    socket.on('item:canceled', (msg) => {
+      const player: Player = JSON.parse(msg);
+      toast({
+        title: 'Attention !',
+        description: `${player.name} a désactivé un de vos pièges`,
+      });
+    });
+
     socket.on('signupsuccess', (message) => {
       const player: Player = JSON.parse(message);
       setPlayer(player);
