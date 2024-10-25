@@ -244,7 +244,7 @@ describe('<PlayingPage />', () => {
     expect(screen.getByText('Coin')).toBeInTheDocument();
     expect(screen.getByText('Coordonnées')).toBeInTheDocument();
     expect(screen.getByText('(0,0)')).toBeInTheDocument();
-    expect(screen.getByText('Annuler')).toBeInTheDocument();
+    expect(screen.getByText('Annuler le piège')).toBeInTheDocument();
 
     await user.click(screen.getByTestId('3-0'));
     expect(screen.queryByText('Case piégée')).not.toBeInTheDocument();
@@ -269,7 +269,7 @@ describe('<PlayingPage />', () => {
     await user.click(screen.getByTestId('3-0'));
 
     expect(screen.getByText('Case piégée')).toBeInTheDocument();
-    await user.click(screen.getByText('Annuler'));
+    await user.click(screen.getByText('Annuler le piège'));
 
     expect(emitSpy).toHaveBeenCalledWith(
       'item:cancel',

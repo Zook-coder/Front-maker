@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { convertElapsedTime } from '@/lib/utils';
 import { useWebSocket } from '@/websockets/WebSocketProvider';
-import React from 'react';
+import { X } from 'lucide-react';
 
 interface Props {
   id: string;
@@ -12,13 +12,26 @@ interface Props {
   duration?: number;
   row: number;
   col: number;
+  onClose: (x: number, y: number) => void;
 }
 
-const TrapPopover = ({ id, name, owner, duration, row, col }: Props) => {
+const TrapPopover = ({
+  id,
+  name,
+  owner,
+  duration,
+  row,
+  col,
+  onClose,
+}: Props) => {
   const { socket, player } = useWebSocket();
   return (
-    <div className="px-4 py-2 absolute -top-full left-1/2 -translate-x-1/2 -translate-y-full z-50 min-w-52 rounded-lg border bg-card text-card-foreground shadow-sm">
+    <div className="px-4 py-2 pt-5 absolute -top-full left-1/2 -translate-x-1/2 -translate-y-full z-50 min-w-52 rounded-lg border bg-card text-card-foreground shadow-sm">
       <div className="relative">
+        <X
+          className="text-muted-foreground w-4 h-4 absolute -top-3 -left-1 z-[99]"
+          onClick={() => onClose(row, col)}
+        />
         <div className="py-1 flex items-center justify-between">
           <h4 className="text-sm font-semibold leading-none tracking-tight">
             Case piégée
@@ -57,7 +70,7 @@ const TrapPopover = ({ id, name, owner, duration, row, col }: Props) => {
                 );
               }}
             >
-              Annuler
+              Annuler le piège
             </Button>
           </div>
         </div>

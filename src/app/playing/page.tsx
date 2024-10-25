@@ -142,10 +142,6 @@ const PlayingPage = () => {
     return tilesColor[map[row][col]] ?? 'white';
   };
 
-  useEffect(() => {
-    if (map) console.log(map);
-  }, [map]);
-
   return (
     <>
       <header className="flex items-center py-2 px-10 justify-between border-b">
@@ -281,6 +277,9 @@ const PlayingPage = () => {
                             owner={traps[map.length - 1 - row][col].owner}
                             row={map.length - 1 - row}
                             col={col}
+                            onClose={() =>
+                              handleClick(map.length - 1 - row, col)
+                            }
                           />
                         )}
                     </div>
