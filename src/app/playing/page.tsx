@@ -260,6 +260,7 @@ const PlayingPage = () => {
                         (item) =>
                           item.x == map.length - 1 - row && item.y == col,
                       ) &&
+                        traps[map.length - 1 - row] &&
                         traps[map.length - 1 - row][col] && (
                           <TrapPopover
                             key={traps[map.length - 1 - row][col].id}
