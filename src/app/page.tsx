@@ -69,6 +69,7 @@ export default function Lobby() {
               </CardContent>
               <CardFooter className="flex gap-3">
                 <Button
+                  type="submit"
                   disabled={
                     players.some((item) => item.id === player?.id) ||
                     queries.signup.loading
@@ -81,7 +82,6 @@ export default function Lobby() {
                 </Button>
                 {players.some((item) => item.name === player?.name) && (
                   <Button
-                    type="submit"
                     variant="destructive"
                     onClick={() => {
                       socket?.emit(
