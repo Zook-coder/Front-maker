@@ -26,7 +26,10 @@ const HelpDialog = () => {
         <DialogHeader>
           <DialogTitle>Comment ça marche ?</DialogTitle>
           <DialogDescription>
-            Vous êtes <span className="font-semibold">{player?.role}</span>
+            Vous êtes{' '}
+            <span className="font-semibold">
+              {player?.role ?? 'Spectateur'}
+            </span>
           </DialogDescription>
           <span className="text-sm">
             Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptates

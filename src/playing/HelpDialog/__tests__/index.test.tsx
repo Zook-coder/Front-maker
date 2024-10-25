@@ -21,4 +21,19 @@ describe('<HelpDialog />', () => {
     await user.click(screen.getByText('Compris !'));
     expect(screen.queryByText('Comment ça marche ?')).not.toBeInTheDocument();
   });
+
+  it('should indicates that the player is a spectator if he is not signed in', async () => {
+    renderPage(<HelpDialog />);
+
+    serverSocket.emit('playerInfo', JSON.stringify({ ...PLAYER_MOCK }));
+
+    await waitFor(() => {
+      expect(screen.getByText('Comment ça marche ?')).toBeInTheDocument();
+      expect(screen.getByText('Vous êtes')).toBeInTheDocument();
+      expect(screen.getByText('Spectateur')).toBeInTheDocument();
+    });
+
+    await user.click(screen.getByText('Compris !'));
+    expect(screen.queryByText('Comment ça marche ?')).not.toBeInTheDocument();
+  });
 });
