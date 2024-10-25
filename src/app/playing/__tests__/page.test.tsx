@@ -28,7 +28,7 @@ describe('<PlayingPage />', () => {
 
       expect(screen.getByText('Statut de jeu')).toBeInTheDocument();
       expect(screen.getByText('00:00')).toBeInTheDocument();
-      expect(screen.getByText('Statistiques globales')).toBeInTheDocument();
+      expect(screen.getByText('Joueurs connectés')).toBeInTheDocument();
 
       expect(screen.getByText('Statut de jeu')).toBeInTheDocument();
       expect(screen.getAllByText('Nombre de boucles')).toHaveLength(3);
