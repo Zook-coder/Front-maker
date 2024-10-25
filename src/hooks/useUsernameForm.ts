@@ -4,10 +4,12 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useWebSocket } from '@/websockets/WebSocketProvider';
 
 export const useUsernameForm = () => {
-  const { socket, queries, setQueries } = useWebSocket();
+  const { socket, queries, setQueries, players, player } = useWebSocket();
   const FormSchema = z.object({
     username: z
-      .string()
+      .string({
+        message: 'Requis',
+      })
       .min(2, {
         message: "Le nom d'utilisateur doit contenir au moins 2 caractères.",
       })
@@ -24,10 +26,13 @@ export const useUsernameForm = () => {
   });
 
   const onSubmit = ({ username }: z.infer<typeof FormSchema>) => {
+    if (players.some((item) => item.name === player?.name)) {
+      return;
+    }
     socket?.emit(
       'signup',
       JSON.stringify({
-        name: username,
+        name: username.trim(),
         type: 'WEB',
       }),
     );
