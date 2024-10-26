@@ -27,13 +27,18 @@ describe('<PlayingPage />', () => {
       expect(screen.getByText('Lancer un sort')).toBeInTheDocument();
 
       expect(screen.getByText('Statut de jeu')).toBeInTheDocument();
+
+      expect(screen.getByText('Temps de jeu')).toBeInTheDocument();
       expect(screen.getByText('00:00')).toBeInTheDocument();
+
+      expect(screen.getByText('Annulation de piège dans')).toBeInTheDocument();
+      expect(screen.getByText('00:06')).toBeInTheDocument();
+
       expect(screen.getByText('Joueurs connectés')).toBeInTheDocument();
 
       expect(screen.getByText('Statut de jeu')).toBeInTheDocument();
-      expect(screen.getAllByText('Nombre de boucles')).toHaveLength(3);
-
-      expect(screen.getAllByText('Bonus utilisés')).toHaveLength(2);
+      expect(screen.getByText('Boucles')).toBeInTheDocument();
+      expect(screen.getByText('0')).toBeInTheDocument();
     });
   });
 
@@ -235,9 +240,8 @@ describe('<PlayingPage />', () => {
     });
 
     await user.click(screen.getByTestId('3-0'));
-
     expect(screen.getByText('Case piégée')).toBeInTheDocument();
-    expect(screen.getByText('00:01')).toBeInTheDocument();
+    expect(screen.getByText('00:10')).toBeInTheDocument();
     expect(screen.getByText('Posé par')).toBeInTheDocument();
     expect(screen.getByText('John')).toBeInTheDocument();
     expect(screen.getByText('Piège')).toBeInTheDocument();

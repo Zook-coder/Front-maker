@@ -7,7 +7,7 @@ export const COIN_MOCK: Item = {
   description: 'A coin',
   coords: { x: 0, y: 0 },
   id: '1',
-  duration: 1,
+  duration: 10,
   owner: {
     ...PLAYER_MOCK,
   },

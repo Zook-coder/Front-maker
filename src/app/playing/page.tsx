@@ -314,7 +314,7 @@ const PlayingPage = () => {
                     <span className="text-muted-foreground">
                       Annulation de piège dans
                     </span>
-                    <span>00:01</span>
+                    <span>00:06</span>
                   </li>
                   <li className="flex items-center justify-between">
                     <span className="text-muted-foreground">Event dans</span>
