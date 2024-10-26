@@ -85,6 +85,7 @@ const PlayingPage = () => {
 
   useEffect(() => {
     if (gameState.status === 'LOBBY') {
+      resetGame();
       redirect('/');
     }
   }, [gameState]);

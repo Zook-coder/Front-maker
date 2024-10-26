@@ -7,6 +7,7 @@ import PlayingPage from '../page';
 import { MAP_MOCK } from '@/testing/__fixtures__/map';
 import { COIN_MOCK } from '@/testing/__fixtures__/item';
 import { redirect } from 'next/navigation';
+import { RANDOM_NUMBER_EVENT_MOCK } from '@/testing/__fixtures__/event';
 
 describe('<PlayingPage />', () => {
   it('should render successfully', async () => {
@@ -356,6 +357,70 @@ describe('<PlayingPage />', () => {
 
     await waitFor(() => {
       expect(redirect).toHaveBeenCalledWith('/');
+    });
+  });
+
+  it('should render random number event drawer if the current event is the right event', async () => {
+    renderPage(<PlayingPage />);
+    serverSocket.emit(
+      'gamestate',
+      JSON.stringify({
+        ...GAME_STATE_MOCK,
+        currentEvent: RANDOM_NUMBER_EVENT_MOCK,
+      }),
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('Un nouvel évènement !')).toBeInTheDocument();
+      expect(
+        screen.getByText('Choisis un nombre entre 0 et 100'),
+      ).toBeInTheDocument();
+      expect(screen.getByText('00:10')).toBeInTheDocument();
+      expect(screen.getByText('Temps restant')).toBeInTheDocument();
+      expect(
+        screen.getByPlaceholderText('Saisissez un nombre entre 1 et 100'),
+      ).toBeInTheDocument();
+      expect(screen.getByText('Soumettre')).toBeInTheDocument();
+    });
+  });
+
+  it('should submit to the server the provided number', async () => {
+    const emitSpy = jest.spyOn(socket, 'emit');
+    renderPage(<PlayingPage />);
+    serverSocket.emit('playerInfo', JSON.stringify({ ...PLAYER_MOCK }));
+    serverSocket.emit(
+      'gamestate',
+      JSON.stringify({
+        ...GAME_STATE_MOCK,
+        currentEvent: RANDOM_NUMBER_EVENT_MOCK,
+      }),
+    );
+
+    await waitFor(() => {
+      expect(
+        screen.getByPlaceholderText('Saisissez un nombre entre 1 et 100'),
+      ).toBeInTheDocument();
+    });
+
+    await user.type(
+      screen.getByPlaceholderText('Saisissez un nombre entre 1 et 100'),
+      '41',
+    );
+    await user.click(screen.getByText('Soumettre'));
+    expect(emitSpy).toHaveBeenCalledWith(
+      'event:submit',
+      JSON.stringify({
+        id: '1',
+        response: 41,
+      }),
+    );
+    serverSocket.emit('event:submit:success', undefined);
+    await waitFor(() => {
+      expect(screen.getByText('Reçu 5/5')).toBeInTheDocument();
+      expect(
+        screen.getByText('Votre réponse a été soumise avec succès.'),
+      ).toBeInTheDocument();
+      expect(screen.getByText('Soumettre')).toBeDisabled();
     });
   });
 });

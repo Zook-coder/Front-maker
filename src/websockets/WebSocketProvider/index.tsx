@@ -1,4 +1,5 @@
 'use client';
+import { RandomNumberEventWinData } from '@/api/event';
 import { GameError, KNOWN_ERRORS } from '@/api/gameerror';
 import { GameState } from '@/api/gamestate';
 import { Item } from '@/api/item';
@@ -180,6 +181,38 @@ const WebSocketProvider = ({ children }: PropsWithChildren) => {
           description: `Le piège de ${player.name} a été désactivé avec succès`,
         });
       }
+    });
+
+    socket.on('event:submit:success', () => {
+      toast({
+        title: 'Reçu 5/5',
+        description: 'Votre réponse a été soumise avec succès.',
+      });
+    });
+
+    socket.on('event:winner', (message) => {
+      const { winnerTeam, randomNumber }: RandomNumberEventWinData =
+        JSON.parse(message);
+
+      if (winnerTeam === 'None') {
+        toast({
+          title: 'Pas de réponses soumises...',
+          description:
+            'Dommage ! Les joueurs repartent les mains vides cette fois.',
+        });
+        return;
+      }
+
+      toast({
+        title:
+          winnerTeam === 'Both'
+            ? `C'est un match nul ! La bonne réponse était ${randomNumber}`
+            : `Les résultats sont tombés ! La bonne réponse était ${randomNumber}`,
+        description:
+          winnerTeam === 'Both'
+            ? 'Les deux équipes terminent à égalité et gagnent autant de crédits.'
+            : `Félicitations aux ${winnerTeam}(s) ! Leurs crédits ont été mis à jour.`,
+      });
     });
 
     socket.on('item:canceled', (msg) => {
