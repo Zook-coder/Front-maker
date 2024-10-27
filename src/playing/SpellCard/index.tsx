@@ -33,8 +33,10 @@ const SpellCard = ({
     <Card className="border-transparent shadow-none px-0">
       <CardHeader className="px-0 py-2">
         <div className="flex items-center justify-between">
-          <CardTitle>{name}</CardTitle>
-          <span className="text-muted-foreground">Durée: {duration}s</span>
+          <CardTitle className="text-xl">{name}</CardTitle>
+          <span className="text-muted-foreground text-sm">
+            Durée: {duration}s
+          </span>
         </div>
         <div className="flex items-center gap-2">
           <Badge>{type}</Badge>

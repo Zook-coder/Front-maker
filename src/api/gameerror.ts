@@ -12,4 +12,6 @@ export const KNOWN_ERRORS: Record<string, string> = {
   NOT_A_PLAYER: 'Vous ne faites pas partie de la liste de joueur.',
   ITEM_ON_COOLDOWN: "L'item est encore sous cooldown.",
   UNKNOWN_ITEM: "L'item sélectionné n'existe pas.",
+  NO_ENOUGH_CREDITS: "Tu n'as pas assez de crédits pour acheter cet item !",
+  NO_EVENT: "Désolé, il n'y a aucun évènement en cours",
 };

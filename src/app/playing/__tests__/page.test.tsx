@@ -18,6 +18,7 @@ describe('<PlayingPage />', () => {
       JSON.stringify({ ...PLAYER_MOCK, role: 'Protector' }),
     );
 
+    serverSocket.emit('newplayer', JSON.stringify([UNITY_PLAYER_MOCK]));
     serverSocket.emit('gamestate', JSON.stringify(GAME_STATE_MOCK));
 
     await waitFor(() => {
@@ -36,10 +37,13 @@ describe('<PlayingPage />', () => {
       expect(screen.getByText('00:06')).toBeInTheDocument();
 
       expect(screen.getByText('Joueurs connectés')).toBeInTheDocument();
+      expect(screen.getByText('D')).toBeInTheDocument();
+      expect(screen.getByText('Dummy')).toBeInTheDocument();
+      expect(screen.getByText('Unity')).toBeInTheDocument();
 
       expect(screen.getByText('Statut de jeu')).toBeInTheDocument();
       expect(screen.getByText('Boucles')).toBeInTheDocument();
-      expect(screen.getByText('0')).toBeInTheDocument();
+      expect(screen.getAllByText('0')).toHaveLength(2);
     });
   });
 

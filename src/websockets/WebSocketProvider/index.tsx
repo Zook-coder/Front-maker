@@ -5,6 +5,7 @@ import { GameState } from '@/api/gamestate';
 import { Item } from '@/api/item';
 import { Player } from '@/api/player';
 import { Query, QueryStatus } from '@/api/query';
+import { ShopItem } from '@/api/shop';
 import { useToast } from '@/hooks/use-toast';
 import {
   createContext,
@@ -24,6 +25,7 @@ interface Context {
   player?: Player;
   unityPlayer?: Player;
   map: number[][] | undefined;
+  shopItems: ShopItem[];
   queries: Record<Query, QueryStatus>;
   setQueries: Dispatch<SetStateAction<Record<Query, QueryStatus>>>;
   devMode: boolean;
@@ -57,6 +59,7 @@ const WebSocketContext = createContext<Context>({
       loading: false,
     },
   },
+  shopItems: [],
   devMode: false,
   resetGame: () => {},
 });
@@ -77,6 +80,7 @@ const WebSocketProvider = ({ children }: PropsWithChildren) => {
   const [unityPlayer, setUnityPlayer] = useState<Player>();
   const [map, setMap] = useState<number[][]>();
   const [devMode, setDevMode] = useState(false);
+  const [shopItems, setShopItems] = useState<ShopItem[]>([]);
   const { toast } = useToast();
   const [queries, setQueries] = useState<Record<Query, QueryStatus>>({
     signup: {
@@ -119,6 +123,7 @@ const WebSocketProvider = ({ children }: PropsWithChildren) => {
     socket.io.on('open', () => {
       console.log('Connected!');
       socket?.emit('maprequest', undefined);
+      socket?.emit('shoprequest', undefined);
       const playerId = localStorage.getItem('playerId');
 
       if (!playerId) {
@@ -131,6 +136,11 @@ const WebSocketProvider = ({ children }: PropsWithChildren) => {
     socket.on('map', (message) => {
       const { map }: { map: number[][] } = JSON.parse(message);
       setMap(map);
+    });
+
+    socket.on('shop', (message) => {
+      const { items }: { items: ShopItem[] } = JSON.parse(message);
+      setShopItems(items);
     });
 
     socket.on('error', (message) => {
@@ -331,6 +341,7 @@ const WebSocketProvider = ({ children }: PropsWithChildren) => {
         queries,
         setQueries,
         resetGame,
+        shopItems,
       }}
     >
       {children}

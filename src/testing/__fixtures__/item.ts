@@ -11,4 +11,18 @@ export const COIN_MOCK: Item = {
   owner: {
     ...PLAYER_MOCK,
   },
+  cooldown: 30,
+};
+
+export const FREEZE_ITEM_MOCK: Item = {
+  type: 'FREEZE',
+  name: 'Gel',
+  description: "Gel l'équipe adverse pendant 5 secondes",
+  coords: { x: 0, y: 0 },
+  id: '2',
+  duration: 10,
+  owner: {
+    ...PLAYER_MOCK,
+  },
+  cooldown: 30,
 };
