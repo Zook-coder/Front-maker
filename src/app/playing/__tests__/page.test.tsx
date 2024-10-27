@@ -7,6 +7,7 @@ import PlayingPage from '../page';
 import { MAP_MOCK } from '@/testing/__fixtures__/map';
 import { COIN_MOCK } from '@/testing/__fixtures__/item';
 import { redirect } from 'next/navigation';
+import { RANDOM_NUMBER_EVENT_MOCK } from '@/testing/__fixtures__/event';
 
 describe('<PlayingPage />', () => {
   it('should render successfully', async () => {
@@ -27,13 +28,18 @@ describe('<PlayingPage />', () => {
       expect(screen.getByText('Lancer un sort')).toBeInTheDocument();
 
       expect(screen.getByText('Statut de jeu')).toBeInTheDocument();
+
+      expect(screen.getByText('Temps de jeu')).toBeInTheDocument();
       expect(screen.getByText('00:00')).toBeInTheDocument();
-      expect(screen.getByText('Statistiques globales')).toBeInTheDocument();
+
+      expect(screen.getByText('Annulation de piège dans')).toBeInTheDocument();
+      expect(screen.getByText('00:06')).toBeInTheDocument();
+
+      expect(screen.getByText('Joueurs connectés')).toBeInTheDocument();
 
       expect(screen.getByText('Statut de jeu')).toBeInTheDocument();
-      expect(screen.getAllByText('Nombre de boucles')).toHaveLength(3);
-
-      expect(screen.getAllByText('Bonus utilisés')).toHaveLength(2);
+      expect(screen.getByText('Boucles')).toBeInTheDocument();
+      expect(screen.getByText('0')).toBeInTheDocument();
     });
   });
 
@@ -235,9 +241,8 @@ describe('<PlayingPage />', () => {
     });
 
     await user.click(screen.getByTestId('3-0'));
-
     expect(screen.getByText('Case piégée')).toBeInTheDocument();
-    expect(screen.getByText('00:01')).toBeInTheDocument();
+    expect(screen.getByText('00:10')).toBeInTheDocument();
     expect(screen.getByText('Posé par')).toBeInTheDocument();
     expect(screen.getByText('John')).toBeInTheDocument();
     expect(screen.getByText('Piège')).toBeInTheDocument();
@@ -352,6 +357,70 @@ describe('<PlayingPage />', () => {
 
     await waitFor(() => {
       expect(redirect).toHaveBeenCalledWith('/');
+    });
+  });
+
+  it('should render random number event drawer if the current event is the right event', async () => {
+    renderPage(<PlayingPage />);
+    serverSocket.emit(
+      'gamestate',
+      JSON.stringify({
+        ...GAME_STATE_MOCK,
+        currentEvent: RANDOM_NUMBER_EVENT_MOCK,
+      }),
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('Un nouvel évènement !')).toBeInTheDocument();
+      expect(
+        screen.getByText('Choisis un nombre entre 0 et 100'),
+      ).toBeInTheDocument();
+      expect(screen.getByText('00:10')).toBeInTheDocument();
+      expect(screen.getByText('Temps restant')).toBeInTheDocument();
+      expect(
+        screen.getByPlaceholderText('Saisissez un nombre entre 1 et 100'),
+      ).toBeInTheDocument();
+      expect(screen.getByText('Soumettre')).toBeInTheDocument();
+    });
+  });
+
+  it('should submit to the server the provided number', async () => {
+    const emitSpy = jest.spyOn(socket, 'emit');
+    renderPage(<PlayingPage />);
+    serverSocket.emit('playerInfo', JSON.stringify({ ...PLAYER_MOCK }));
+    serverSocket.emit(
+      'gamestate',
+      JSON.stringify({
+        ...GAME_STATE_MOCK,
+        currentEvent: RANDOM_NUMBER_EVENT_MOCK,
+      }),
+    );
+
+    await waitFor(() => {
+      expect(
+        screen.getByPlaceholderText('Saisissez un nombre entre 1 et 100'),
+      ).toBeInTheDocument();
+    });
+
+    await user.type(
+      screen.getByPlaceholderText('Saisissez un nombre entre 1 et 100'),
+      '41',
+    );
+    await user.click(screen.getByText('Soumettre'));
+    expect(emitSpy).toHaveBeenCalledWith(
+      'event:submit',
+      JSON.stringify({
+        id: '1',
+        response: 41,
+      }),
+    );
+    serverSocket.emit('event:submit:success', undefined);
+    await waitFor(() => {
+      expect(screen.getByText('Reçu 5/5')).toBeInTheDocument();
+      expect(
+        screen.getByText('Votre réponse a été soumise avec succès.'),
+      ).toBeInTheDocument();
+      expect(screen.getByText('Soumettre')).toBeDisabled();
     });
   });
 });

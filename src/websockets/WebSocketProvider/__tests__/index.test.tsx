@@ -1,4 +1,5 @@
 import MockComponent from '@/__mocks__/component';
+import { RANDOM_NUMBER_EVENT_WIN_DATA_MOCK } from '@/testing/__fixtures__/event';
 import {
   UNKNOWN_PLAYER_ERROR_MOCK,
   USERNAME_ALREADY_TAKEN_ERROR_MOCK,
@@ -133,6 +134,74 @@ describe('<WebSocketProvider />', () => {
       expect(screen.getByText('Attention !')).toBeInTheDocument();
       expect(
         screen.getByText('John a désactivé un de vos pièges'),
+      ).toBeInTheDocument();
+    });
+  });
+
+  it('should toast when an event winner is being sent', async () => {
+    renderPage(<MockComponent />);
+    serverSocket.emit(
+      'event:winner',
+      JSON.stringify({
+        ...RANDOM_NUMBER_EVENT_WIN_DATA_MOCK,
+        winnerTeam: 'Evilman',
+      }),
+    );
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(
+          'Les résultats sont tombés ! La bonne réponse était 10',
+        ),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText(
+          'Félicitations aux Evilman(s) ! Leurs crédits ont été mis à jour.',
+        ),
+      ).toBeInTheDocument();
+    });
+  });
+
+  it('should toast when an event winner is being sent (equality)', async () => {
+    renderPage(<MockComponent />);
+    serverSocket.emit(
+      'event:winner',
+      JSON.stringify({
+        ...RANDOM_NUMBER_EVENT_WIN_DATA_MOCK,
+        winnerTeam: 'Both',
+      }),
+    );
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("C'est un match nul ! La bonne réponse était 10"),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText(
+          'Les deux équipes terminent à égalité et gagnent autant de crédits.',
+        ),
+      ).toBeInTheDocument();
+    });
+  });
+
+  it('should toast when there is no winner of the event', async () => {
+    renderPage(<MockComponent />);
+    serverSocket.emit(
+      'event:winner',
+      JSON.stringify({
+        ...RANDOM_NUMBER_EVENT_WIN_DATA_MOCK,
+        winnerTeam: 'None',
+      }),
+    );
+
+    await waitFor(() => {
+      expect(
+        screen.getByText('Pas de réponses soumises...'),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText(
+          'Dommage ! Les joueurs repartent les mains vides cette fois.',
+        ),
       ).toBeInTheDocument();
     });
   });

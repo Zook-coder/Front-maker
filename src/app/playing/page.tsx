@@ -56,6 +56,8 @@ import TrapPopover from '@/playing/TrapPopover';
 import HelpDialog from '@/playing/HelpDialog';
 import FinishedDialog from '@/playing/FinishedDialog';
 import { toast } from '@/hooks/use-toast';
+import UnityPlayerCard from '@/playing/UnityPlayerCard';
+import RandomNumberEventDialog from '@/events/RandomNumberEventDialog';
 
 const DEFAULT_ITEM: Omit<Item, 'owner'> = {
   id: '1',
@@ -82,7 +84,8 @@ const PlayingPage = () => {
   >([]);
 
   useEffect(() => {
-    if (gameState.status !== 'PLAYING') {
+    if (gameState.status === 'LOBBY') {
+      resetGame();
       redirect('/');
     }
   }, [gameState]);
@@ -250,7 +253,7 @@ const PlayingPage = () => {
                     <div
                       key={`${row}-${col}`}
                       data-testid={`${row}-${col}`}
-                      className="relative w-[1.2vw] h-[1.2vw] border border-border cursor-pointer"
+                      className="relative w-[1.15vw] h-[1.15vw] border border-border cursor-pointer"
                       onMouseMove={() =>
                         setHoveredPosition({ row: map.length - 1 - row, col })
                       }
@@ -305,10 +308,18 @@ const PlayingPage = () => {
                     <span>{convertElapsedTime(gameState.timer)}</span>
                   </li>
                   <li className="flex items-center justify-between">
-                    <span className="text-muted-foreground">
-                      Nombre de boucles
-                    </span>
+                    <span className="text-muted-foreground">Boucles</span>
                     <span>{gameState.loops}</span>
+                  </li>
+                  <li className="flex items-center justify-between">
+                    <span className="text-muted-foreground">
+                      Annulation de piège dans
+                    </span>
+                    <span>00:06</span>
+                  </li>
+                  <li className="flex items-center justify-between">
+                    <span className="text-muted-foreground">Event dans</span>
+                    <span>{convertElapsedTime(gameState.eventTimer)}</span>
                   </li>
                 </ul>
               </div>
@@ -316,50 +327,16 @@ const PlayingPage = () => {
           </Card>
           <Card>
             <CardHeader>
-              <CardTitle>Statistiques globales</CardTitle>
+              <CardTitle>Joueurs connectés</CardTitle>
               <CardDescription>
                 Lorem ipsum dolor sit amet consectetur.
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div>
-                <span className="text-base font-semibold">Bienfaiteur</span>
-                <div className="flex flex-col">
-                  <ul>
-                    <li className="flex items-center justify-between">
-                      <span className="text-muted-foreground">
-                        Bonus utilisés
-                      </span>
-                      <span>1</span>
-                    </li>
-                    <li className="flex items-center justify-between">
-                      <span className="text-muted-foreground">
-                        Nombre de boucles
-                      </span>
-                      <span>{gameState.loops}</span>
-                    </li>
-                  </ul>
-                </div>
-                <Separator className="my-2" />
-              </div>
-              <div>
-                <span className="text-base font-semibold">Malfaiteur</span>
-                <div className="flex flex-col">
-                  <ul>
-                    <li className="flex items-center justify-between">
-                      <span className="text-muted-foreground">
-                        Bonus utilisés
-                      </span>
-                      <span>1</span>
-                    </li>
-                    <li className="flex items-center justify-between">
-                      <span className="text-muted-foreground">
-                        Nombre de boucles
-                      </span>
-                      <span>{gameState.loops}</span>
-                    </li>
-                  </ul>
-                </div>
+              <div className="flex flex-col gap-4">
+                <UnityPlayerCard />
+                <UnityPlayerCard />
+                <UnityPlayerCard />
               </div>
             </CardContent>
           </Card>
@@ -420,6 +397,9 @@ const PlayingPage = () => {
         </DialogContent>
       </Dialog>
       <FinishedDialog open={gameState.status === 'FINISHED'} />
+      {gameState.currentEvent?.type === 'RANDOM_NUMBER' && (
+        <RandomNumberEventDialog event={gameState.currentEvent} />
+      )}
     </>
   );
 };

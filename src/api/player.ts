@@ -13,4 +13,5 @@ export interface Player {
   spells: Spell[];
   items: Item[];
   position?: { x: number; y: number };
+  credits: number;
 }
