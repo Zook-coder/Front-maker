@@ -23,7 +23,7 @@ const BlindDialog = () => {
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogAction disabled>Je comprends</AlertDialogAction>
+          <AlertDialogAction>Je comprends</AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

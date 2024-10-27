@@ -7,6 +7,7 @@ export interface Item {
   name: string;
   type: ItemType;
   duration?: number;
+  durationLength?: number;
   description: string;
   coords: { x: number; y: number };
   owner: Player;

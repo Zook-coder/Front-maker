@@ -58,7 +58,7 @@ const SpecialItemCard = ({ item }: Props) => {
         <div className="flex items-center justify-between">
           <CardTitle className="text-xl">{item.name}</CardTitle>
           <span className="text-muted-foreground text-sm">
-            Durée: {item.duration}s
+            Durée: {item.durationLength}s
           </span>
         </div>
       </CardHeader>

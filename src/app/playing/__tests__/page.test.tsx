@@ -447,7 +447,6 @@ describe('<PlayingPage />', () => {
         ),
       ).toBeInTheDocument();
       expect(screen.getByText('Je comprends')).toBeInTheDocument();
-      expect(screen.getByText('Je comprends')).toBeDisabled();
     });
   });
 });
