@@ -12,6 +12,8 @@ export interface Player {
   speed?: number;
   spells: Spell[];
   items: Item[];
+  specialItems?: Item[];
   position?: { x: number; y: number };
   credits: number;
+  blind?: boolean;
 }

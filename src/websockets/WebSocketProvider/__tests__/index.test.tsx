@@ -10,7 +10,7 @@ import { renderPage, serverSocket, socket } from '@/testing/utils';
 import { screen, waitFor } from '@testing-library/dom';
 
 describe('<WebSocketProvider />', () => {
-  it('should ask the server who am i on connection if local storage is present', async () => {
+  it('should ask the server the map on connection', async () => {
     const consoleSpy = jest.spyOn(console, 'log');
     const emitSpy = jest.spyOn(socket, 'emit');
     localStorage.setItem('playerId', '1234');
@@ -25,6 +25,19 @@ describe('<WebSocketProvider />', () => {
         JSON.stringify({ id: '1234' }),
       );
       expect(emitSpy).toHaveBeenCalledWith('maprequest', undefined);
+    });
+  });
+
+  it('should ask the server the shop on connection', async () => {
+    const consoleSpy = jest.spyOn(console, 'log');
+    const emitSpy = jest.spyOn(socket, 'emit');
+    renderPage(<MockComponent />);
+
+    serverSocket.emit('open');
+
+    await waitFor(() => {
+      expect(consoleSpy).toHaveBeenCalledWith('Connected!');
+      expect(emitSpy).toHaveBeenCalledWith('shoprequest', undefined);
     });
   });
 

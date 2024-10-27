@@ -18,6 +18,7 @@ describe('<PlayingPage />', () => {
       JSON.stringify({ ...PLAYER_MOCK, role: 'Protector' }),
     );
 
+    serverSocket.emit('newplayer', JSON.stringify([UNITY_PLAYER_MOCK]));
     serverSocket.emit('gamestate', JSON.stringify(GAME_STATE_MOCK));
 
     await waitFor(() => {
@@ -36,10 +37,13 @@ describe('<PlayingPage />', () => {
       expect(screen.getByText('00:06')).toBeInTheDocument();
 
       expect(screen.getByText('Joueurs connectés')).toBeInTheDocument();
+      expect(screen.getByText('D')).toBeInTheDocument();
+      expect(screen.getByText('Dummy')).toBeInTheDocument();
+      expect(screen.getByText('Unity')).toBeInTheDocument();
 
       expect(screen.getByText('Statut de jeu')).toBeInTheDocument();
       expect(screen.getByText('Boucles')).toBeInTheDocument();
-      expect(screen.getByText('0')).toBeInTheDocument();
+      expect(screen.getAllByText('0')).toHaveLength(2);
     });
   });
 
@@ -421,6 +425,28 @@ describe('<PlayingPage />', () => {
         screen.getByText('Votre réponse a été soumise avec succès.'),
       ).toBeInTheDocument();
       expect(screen.getByText('Soumettre')).toBeDisabled();
+    });
+  });
+
+  it('should show blind dialog if the player is blind', async () => {
+    renderPage(<PlayingPage />);
+    await user.click(screen.getByText('Compris !'));
+
+    serverSocket.emit(
+      'playerInfo',
+      JSON.stringify({ ...PLAYER_MOCK, blind: true }),
+    );
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Vous avez été rendu inactif par l'équipe adverse !"),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText(
+          "Vous ne pouvez plus effectuer d'action tant que le sort est actif.",
+        ),
+      ).toBeInTheDocument();
+      expect(screen.getByText('Je comprends')).toBeInTheDocument();
     });
   });
 });

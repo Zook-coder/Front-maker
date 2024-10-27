@@ -56,8 +56,11 @@ import TrapPopover from '@/playing/TrapPopover';
 import HelpDialog from '@/playing/HelpDialog';
 import FinishedDialog from '@/playing/FinishedDialog';
 import { toast } from '@/hooks/use-toast';
-import UnityPlayerCard from '@/playing/UnityPlayerCard';
+import PlayerCard from '@/playing/PlayerCard';
 import RandomNumberEventDialog from '@/events/RandomNumberEventDialog';
+import ShopCard from '@/playing/ShopCard';
+import SpecialItemCard from '@/playing/SpecialItemCard';
+import BlindDialog from '@/playing/BlindDialog';
 
 const DEFAULT_ITEM: Omit<Item, 'owner'> = {
   id: '1',
@@ -66,11 +69,20 @@ const DEFAULT_ITEM: Omit<Item, 'owner'> = {
   duration: 0,
   name: 'Coin',
   coords: { x: 0, y: 0 },
+  currentCooldown: 0,
 };
 
 const PlayingPage = () => {
-  const { gameState, map, player, devMode, socket, unityPlayer, resetGame } =
-    useWebSocket();
+  const {
+    gameState,
+    map,
+    player,
+    players,
+    devMode,
+    socket,
+    unityPlayer,
+    resetGame,
+  } = useWebSocket();
   const { onSubmit, form, setTarget } = useItemForm();
   const [dialogOpened, setDialogOpened] = useState(false);
   const [hoveredPosition, setHoveredPosition] = useState<{
@@ -197,6 +209,21 @@ const PlayingPage = () => {
                         ))}
                       </div>
                     </div>
+                    {player.specialItems && player.specialItems.length > 0 && (
+                      <>
+                        <SheetHeader>
+                          <SheetTitle>Items spéciaux</SheetTitle>
+                          <SheetDescription>
+                            Lorem ipsum dolor sit amet.
+                          </SheetDescription>
+                        </SheetHeader>
+                        <div className="flex flex-col gap-2 mt-4">
+                          {player.specialItems?.map((item) => (
+                            <SpecialItemCard key={item.id} item={item} />
+                          ))}
+                        </div>
+                      </>
+                    )}
                   </SheetContent>
                 </Sheet>
               </li>
@@ -295,7 +322,7 @@ const PlayingPage = () => {
         <div className="flex flex-col gap-2">
           <Card>
             <CardHeader>
-              <CardTitle>Statut de jeu</CardTitle>
+              <CardTitle className="text-xl">Statut de jeu</CardTitle>
               <CardDescription>
                 Lorem ipsum dolor sit amet consectetur.
               </CardDescription>
@@ -327,19 +354,20 @@ const PlayingPage = () => {
           </Card>
           <Card>
             <CardHeader>
-              <CardTitle>Joueurs connectés</CardTitle>
+              <CardTitle className="text-xl">Joueurs connectés</CardTitle>
               <CardDescription>
                 Lorem ipsum dolor sit amet consectetur.
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="flex flex-col gap-4">
-                <UnityPlayerCard />
-                <UnityPlayerCard />
-                <UnityPlayerCard />
+              <div className="flex flex-col gap-2">
+                {players.map((player) => (
+                  <PlayerCard key={player.id} player={player} />
+                ))}
               </div>
             </CardContent>
           </Card>
+          <ShopCard />
         </div>
       </div>
       <Dialog
@@ -397,6 +425,7 @@ const PlayingPage = () => {
         </DialogContent>
       </Dialog>
       <FinishedDialog open={gameState.status === 'FINISHED'} />
+      {player?.blind && <BlindDialog />}
       {gameState.currentEvent?.type === 'RANDOM_NUMBER' && (
         <RandomNumberEventDialog event={gameState.currentEvent} />
       )}
