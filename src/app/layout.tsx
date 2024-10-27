@@ -2,6 +2,7 @@ import { Toaster } from '@/components/ui/toaster';
 import WebSocketProvider from '@/websockets/WebSocketProvider';
 import type { Metadata } from 'next';
 import './globals.css';
+import { GeistSans } from 'geist/font/sans';
 
 export const metadata: Metadata = {
   title: 'Project Maker',
@@ -15,7 +16,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>
+      <body className={GeistSans.className}>
         <WebSocketProvider>{children}</WebSocketProvider>
         <Toaster />
       </body>

@@ -58,6 +58,7 @@ import FinishedDialog from '@/playing/FinishedDialog';
 import { toast } from '@/hooks/use-toast';
 import UnityPlayerCard from '@/playing/UnityPlayerCard';
 import RandomNumberEventDialog from '@/events/RandomNumberEventDialog';
+import ShopCard from '@/playing/ShopCard';
 
 const DEFAULT_ITEM: Omit<Item, 'owner'> = {
   id: '1',
@@ -340,6 +341,7 @@ const PlayingPage = () => {
               </div>
             </CardContent>
           </Card>
+          <ShopCard />
         </div>
       </div>
       <Dialog
@@ -397,7 +399,7 @@ const PlayingPage = () => {
         </DialogContent>
       </Dialog>
       <FinishedDialog open={gameState.status === 'FINISHED'} />
-      {gameState.currentEvent?.type === 'RANDOM_NUMBER' && (
+      {gameState.currentEvent?.type === 'RANDOM_NUMBER' && false && (
         <RandomNumberEventDialog event={gameState.currentEvent} />
       )}
     </>

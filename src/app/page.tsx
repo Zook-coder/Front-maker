@@ -30,7 +30,7 @@ export default function Lobby() {
   const { form, onSubmit } = useUsernameForm();
 
   useEffect(() => {
-    if (gameState.status === 'PLAYING') {
+    if (gameState.status === 'PLAYING' || gameState.status === 'EVENT') {
       redirect('/playing');
     }
   }, [gameState]);
