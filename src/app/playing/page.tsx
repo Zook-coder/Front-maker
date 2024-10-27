@@ -1,5 +1,5 @@
 'use client';
-import { tilesColor } from '@/api/colors';
+import { tilesColor, TileType } from '@/api/colors';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import {
@@ -61,6 +61,7 @@ import RandomNumberEventDialog from '@/events/RandomNumberEventDialog';
 import ShopCard from '@/playing/ShopCard';
 import SpecialItemCard from '@/playing/SpecialItemCard';
 import BlindDialog from '@/playing/BlindDialog';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 const DEFAULT_ITEM: Omit<Item, 'owner'> = {
   id: '1',
@@ -107,6 +108,20 @@ const PlayingPage = () => {
       toast({
         title: 'Oops...',
         description: 'Il faut être un joueur pour déclencher des pièges',
+      });
+      return;
+    }
+
+    if (
+      map &&
+      map[x] &&
+      map[x][y] !== TileType.Sidewalks &&
+      map[x][y] !== TileType.Crosswalks
+    ) {
+      toast({
+        title: 'Oops...',
+        description: "Cette case ne peut pas recevoir d'items.",
+        variant: 'destructive',
       });
       return;
     }
@@ -184,46 +199,49 @@ const PlayingPage = () => {
                     <Button>Lancer un sort</Button>
                   </SheetTrigger>
                   <SheetContent>
-                    <SheetHeader>
-                      <SheetTitle>Manuel des sorts</SheetTitle>
-                      <SheetDescription>
-                        Lorem ipsum dolor, sit amet consectetur adipisicing
-                        elit. Voluptate, laborum.
-                      </SheetDescription>
-                    </SheetHeader>
-                    <div className="flex flex-col mt-4">
+                    <ScrollArea className="h-screen">
+                      <SheetHeader>
+                        <SheetTitle>Manuel des sorts</SheetTitle>
+                        <SheetDescription>
+                          Lorem ipsum dolor, sit amet consectetur adipisicing
+                          elit. Voluptate, laborum.
+                        </SheetDescription>
+                      </SheetHeader>
                       <div className="flex flex-col mt-4">
-                        {player?.spells.map((spell, index) => (
-                          <>
-                            <SpellCard
-                              key={index}
-                              id={index}
-                              name={spell.name}
-                              description={spell.description}
-                              duration={spell.duration}
-                              currentCooldown={spell.currentCooldown}
-                              type={spell.type}
-                            />
-                            <Separator className="my-2" />
-                          </>
-                        ))}
-                      </div>
-                    </div>
-                    {player.specialItems && player.specialItems.length > 0 && (
-                      <>
-                        <SheetHeader>
-                          <SheetTitle>Items spéciaux</SheetTitle>
-                          <SheetDescription>
-                            Lorem ipsum dolor sit amet.
-                          </SheetDescription>
-                        </SheetHeader>
-                        <div className="flex flex-col gap-2 mt-4">
-                          {player.specialItems?.map((item) => (
-                            <SpecialItemCard key={item.id} item={item} />
+                        <div className="flex flex-col mt-4">
+                          {player?.spells.map((spell, index) => (
+                            <>
+                              <SpellCard
+                                key={index}
+                                id={index}
+                                name={spell.name}
+                                description={spell.description}
+                                duration={spell.duration}
+                                currentCooldown={spell.currentCooldown}
+                                type={spell.type}
+                              />
+                              <Separator className="my-2" />
+                            </>
                           ))}
                         </div>
-                      </>
-                    )}
+                      </div>
+                      {player.specialItems &&
+                        player.specialItems.length > 0 && (
+                          <>
+                            <SheetHeader>
+                              <SheetTitle>Items spéciaux</SheetTitle>
+                              <SheetDescription>
+                                Lorem ipsum dolor sit amet.
+                              </SheetDescription>
+                            </SheetHeader>
+                            <div className="flex flex-col gap-2 mt-4">
+                              {player.specialItems?.map((item) => (
+                                <SpecialItemCard key={item.id} item={item} />
+                              ))}
+                            </div>
+                          </>
+                        )}
+                    </ScrollArea>
                   </SheetContent>
                 </Sheet>
               </li>
@@ -360,11 +378,13 @@ const PlayingPage = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="flex flex-col gap-2">
-                {players.map((player) => (
-                  <PlayerCard key={player.id} player={player} />
-                ))}
-              </div>
+              <ScrollArea className="h-36">
+                <div className="flex flex-col gap-2">
+                  {players.map((player) => (
+                    <PlayerCard key={player.id} player={player} />
+                  ))}
+                </div>
+              </ScrollArea>
             </CardContent>
           </Card>
           <ShopCard />

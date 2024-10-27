@@ -20,3 +20,8 @@ const localStorageMock = {
 };
 
 global.localStorage = localStorageMock;
+global.ResizeObserver = class {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+};

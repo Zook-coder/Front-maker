@@ -1,4 +1,5 @@
 import { Item } from '@/api/item';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -60,6 +61,9 @@ const SpecialItemCard = ({ item }: Props) => {
           <span className="text-muted-foreground text-sm">
             Durée: {item.durationLength}s
           </span>
+        </div>
+        <div className="flex items-center gap-2">
+          <Badge>Usage unique</Badge>
         </div>
       </CardHeader>
       <CardContent className="px-0">

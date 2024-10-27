@@ -96,6 +96,7 @@ describe('<Shop />', () => {
 
     expect(screen.getByText('Items spéciaux'));
     expect(screen.getByText('Gel')).toBeInTheDocument();
+    expect(screen.getByText('Usage unique')).toBeInTheDocument();
     expect(
       screen.getByText("Gel l'équipe adverse pendant 5 secondes"),
     ).toBeInTheDocument();
