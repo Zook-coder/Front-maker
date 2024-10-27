@@ -226,6 +226,38 @@ describe('<PlayingPage />', () => {
     ).toBeInTheDocument();
   });
 
+  it('should toast when trying to click on a not allowed tile', async () => {
+    renderPage(<PlayingPage />);
+    await user.click(screen.getByText('Compris !'));
+
+    serverSocket.emit('playerInfo', JSON.stringify(PLAYER_MOCK));
+
+    serverSocket.emit(
+      'gamestate',
+      JSON.stringify({ ...GAME_STATE_MOCK, items: [COIN_MOCK] }),
+    );
+    serverSocket.emit(
+      'map',
+      JSON.stringify({
+        map: [
+          [0, 0, 0, 0],
+          [0, 0, 0, 0],
+          [0, 0, 0, 0],
+          [0, 0, 0, 0],
+        ],
+      }),
+    );
+
+    await waitFor(() => {
+      expect(screen.getByTestId('3-0')).toHaveStyle({ background: 'red' });
+    });
+    await user.click(screen.getByTestId('3-0'));
+    expect(screen.getByText('Oops...')).toBeInTheDocument();
+    expect(
+      screen.getByText("Cette case ne peut pas recevoir d'items."),
+    ).toBeInTheDocument();
+  });
+
   it('should open/close trap popover when clicking on a marked tile', async () => {
     renderPage(<PlayingPage />);
     await user.click(screen.getByText('Compris !'));
