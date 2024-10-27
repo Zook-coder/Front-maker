@@ -15,4 +15,5 @@ export interface Player {
   specialItems?: Item[];
   position?: { x: number; y: number };
   credits: number;
+  blind?: boolean;
 }

@@ -10,5 +10,5 @@ export interface Item {
   description: string;
   coords: { x: number; y: number };
   owner: Player;
-  cooldown: number;
+  currentCooldown: number;
 }

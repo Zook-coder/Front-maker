@@ -39,6 +39,7 @@ const ShopItemCard = ({ item }: Props) => {
     }
     setLoading(false);
   };
+
   return (
     <>
       <div key={item.name} className="flex items-center justify-between">

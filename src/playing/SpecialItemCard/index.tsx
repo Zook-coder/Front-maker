@@ -8,14 +8,50 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import { toast } from '@/hooks/use-toast';
 import { convertElapsedTime } from '@/lib/utils';
-import React from 'react';
+import { useWebSocket } from '@/websockets/WebSocketProvider';
+import { Loader2 } from 'lucide-react';
+import React, { useState } from 'react';
 
 interface Props {
   item: Item;
 }
 
 const SpecialItemCard = ({ item }: Props) => {
+  const { socket, player } = useWebSocket();
+  const [loading, setLoading] = useState(false);
+
+  const activateItem = async (): Promise<void> => {
+    return new Promise((resolve, reject) => {
+      socket?.emit(
+        'item:activate',
+        JSON.stringify({
+          id: player?.id,
+          item: item.type,
+        }),
+      );
+      socket?.on('item:activate:success', () => {
+        toast({
+          title: 'Bien reçu !',
+          description: "L'item a été activé avec succès.",
+        });
+        resolve();
+      });
+      socket?.on('error', reject);
+    });
+  };
+
+  const onClick = async () => {
+    setLoading(true);
+    try {
+      await activateItem();
+    } catch {
+      setLoading(false);
+    }
+    setLoading(false);
+  };
+
   return (
     <Card className="border-transparent shadow-none px-0">
       <CardHeader className="px-0 py-2">
@@ -30,8 +66,15 @@ const SpecialItemCard = ({ item }: Props) => {
         <CardDescription>{item.description}</CardDescription>
       </CardContent>
       <CardFooter className="px-0 flex justify-end">
-        <Button className="w-full">
-          {item.cooldown === 0 ? 'Prêt' : convertElapsedTime(item.cooldown)}
+        <Button
+          disabled={loading || item.currentCooldown != 0}
+          className="w-full"
+          onClick={onClick}
+        >
+          {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          {item.currentCooldown === 0
+            ? 'Prêt'
+            : convertElapsedTime(item.currentCooldown)}
         </Button>
       </CardFooter>
     </Card>

@@ -11,7 +11,7 @@ export const COIN_MOCK: Item = {
   owner: {
     ...PLAYER_MOCK,
   },
-  cooldown: 30,
+  currentCooldown: 30,
 };
 
 export const FREEZE_ITEM_MOCK: Item = {
@@ -24,5 +24,5 @@ export const FREEZE_ITEM_MOCK: Item = {
   owner: {
     ...PLAYER_MOCK,
   },
-  cooldown: 30,
+  currentCooldown: 30,
 };

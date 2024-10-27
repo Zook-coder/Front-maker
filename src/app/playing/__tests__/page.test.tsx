@@ -427,4 +427,27 @@ describe('<PlayingPage />', () => {
       expect(screen.getByText('Soumettre')).toBeDisabled();
     });
   });
+
+  it('should show blind dialog if the player is blind', async () => {
+    renderPage(<PlayingPage />);
+    await user.click(screen.getByText('Compris !'));
+
+    serverSocket.emit(
+      'playerInfo',
+      JSON.stringify({ ...PLAYER_MOCK, blind: true }),
+    );
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Vous avez été rendu inactif par l'équipe adverse !"),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText(
+          "Vous ne pouvez plus effectuer d'action tant que le sort est actif.",
+        ),
+      ).toBeInTheDocument();
+      expect(screen.getByText('Je comprends')).toBeInTheDocument();
+      expect(screen.getByText('Je comprends')).toBeDisabled();
+    });
+  });
 });

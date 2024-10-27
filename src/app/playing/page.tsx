@@ -60,6 +60,7 @@ import PlayerCard from '@/playing/PlayerCard';
 import RandomNumberEventDialog from '@/events/RandomNumberEventDialog';
 import ShopCard from '@/playing/ShopCard';
 import SpecialItemCard from '@/playing/SpecialItemCard';
+import BlindDialog from '@/playing/BlindDialog';
 
 const DEFAULT_ITEM: Omit<Item, 'owner'> = {
   id: '1',
@@ -68,7 +69,7 @@ const DEFAULT_ITEM: Omit<Item, 'owner'> = {
   duration: 0,
   name: 'Coin',
   coords: { x: 0, y: 0 },
-  cooldown: 0,
+  currentCooldown: 0,
 };
 
 const PlayingPage = () => {
@@ -424,6 +425,7 @@ const PlayingPage = () => {
         </DialogContent>
       </Dialog>
       <FinishedDialog open={gameState.status === 'FINISHED'} />
+      {player?.blind && <BlindDialog />}
       {gameState.currentEvent?.type === 'RANDOM_NUMBER' && (
         <RandomNumberEventDialog event={gameState.currentEvent} />
       )}
