@@ -1,6 +1,6 @@
 'use client';
 import { tilesColor, TileType } from '@/api/colors';
-import { Item } from '@/api/item';
+import { Item, itemDescriptionMap } from '@/api/item';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -63,16 +63,6 @@ import { useWebSocket } from '@/websockets/WebSocketProvider';
 import { redirect } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 
-const DEFAULT_ITEM: Omit<Item, 'owner'> = {
-  id: '1',
-  type: 'COIN',
-  description: 'A coin that gives points to the player',
-  duration: 0,
-  name: 'Coin',
-  coords: { x: 0, y: 0 },
-  currentCooldown: 0,
-};
-
 const PlayingPage = () => {
   const {
     gameState,
@@ -90,8 +80,6 @@ const PlayingPage = () => {
     row: number;
     col: number;
   }>();
-  const [selectedItem, setSelectedItem] =
-    useState<Omit<Item, 'owner'>>(DEFAULT_ITEM);
   const [openedPopover, setOpenedPopover] = useState<
     { x: number; y: number }[]
   >([]);
@@ -414,7 +402,9 @@ const PlayingPage = () => {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Tu {"l'"}entends ce bruit ?</DialogTitle>
-            <DialogDescription>{selectedItem.description}</DialogDescription>
+            <DialogDescription>
+              {itemDescriptionMap[form.getValues('item')] ?? ''}
+            </DialogDescription>
           </DialogHeader>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -428,20 +418,14 @@ const PlayingPage = () => {
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue />
+                        <SelectValue placeholder="Sélectionnez un item" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
                       {player?.items.map((item) => (
-                        <>
-                          <SelectItem
-                            key={item.id}
-                            onClick={() => setSelectedItem(item)}
-                            value={item.type}
-                          >
-                            {item.name}
-                          </SelectItem>
-                        </>
+                        <SelectItem key={item.id} value={item.type}>
+                          {item.name}
+                        </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>

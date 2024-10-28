@@ -14,3 +14,9 @@ export interface Item {
   currentCooldown: number;
   password?: string;
 }
+
+export const itemDescriptionMap: Record<string, string> = {
+  COIN: 'Une pièce qui donne de la vitesse au joueur',
+  WALL: 'Pose de manière instantanée un mur sur la carte',
+  BOMB: 'Pose une bombe qui explose au contact et réinitialise la position du joueur',
+};
