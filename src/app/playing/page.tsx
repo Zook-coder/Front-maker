@@ -153,6 +153,17 @@ const PlayingPage = () => {
     return traps;
   }, [] as Item[][]);
 
+  const getColorOfItem = (name: string) => {
+    switch (name) {
+      case 'Coin':
+        return '#ffef00';
+      case 'Wall':
+        return '#8b7355';
+      default:
+        return 'red';
+    }
+  };
+
   const getTileBackground = (row: number, col: number, map: number[][]) => {
     if (
       unityPlayer?.position &&
@@ -161,12 +172,11 @@ const PlayingPage = () => {
     ) {
       return 'purple';
     }
-    if (
-      gameState.items.some(
-        (item) => item.coords.x === row && item.coords.y === col,
-      )
-    ) {
-      return 'red';
+    const item = gameState.items.find(
+      (item) => item.coords.x === row && item.coords.y === col,
+    );
+    if (item) {
+      return getColorOfItem(item.name);
     }
     if (hoveredPosition?.col === col && hoveredPosition.row === row) {
       return 'black';
@@ -287,7 +297,7 @@ const PlayingPage = () => {
       <div className="flex justify-between px-10">
         {map && (
           <div
-            className={`grid gap-x-0`}
+            className="grid gap-x-0 h-[80vh]"
             style={{
               gridTemplateColumns: `repeat(${map[0].length}, minmax(0, 1fr))`,
               gridTemplateRows: `repeat(${map.length}, minmax(0, 1fr))`,
@@ -300,7 +310,7 @@ const PlayingPage = () => {
                     <div
                       key={`${row}-${col}`}
                       data-testid={`${row}-${col}`}
-                      className="relative w-[1.15vw] h-[1.15vw] border border-border cursor-pointer"
+                      className="relative w-[1.1vw] h-[1.1vw] border border-border cursor-pointer"
                       onMouseMove={() =>
                         setHoveredPosition({ row: map.length - 1 - row, col })
                       }
