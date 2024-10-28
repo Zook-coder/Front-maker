@@ -1,13 +1,13 @@
+import { RANDOM_NUMBER_EVENT_MOCK } from '@/testing/__fixtures__/event';
 import { GAME_STATE_MOCK } from '@/testing/__fixtures__/gamestate';
+import { COIN_MOCK } from '@/testing/__fixtures__/item';
+import { MAP_MOCK } from '@/testing/__fixtures__/map';
 import { PLAYER_MOCK, UNITY_PLAYER_MOCK } from '@/testing/__fixtures__/player';
 import { SPELL_MOCK } from '@/testing/__fixtures__/spell';
 import { renderPage, serverSocket, socket, user } from '@/testing/utils';
 import { screen, waitFor } from '@testing-library/dom';
-import PlayingPage from '../page';
-import { MAP_MOCK } from '@/testing/__fixtures__/map';
-import { COIN_MOCK } from '@/testing/__fixtures__/item';
 import { redirect } from 'next/navigation';
-import { RANDOM_NUMBER_EVENT_MOCK } from '@/testing/__fixtures__/event';
+import PlayingPage from '../page';
 
 describe('<PlayingPage />', () => {
   it('should render successfully', async () => {
@@ -287,7 +287,7 @@ describe('<PlayingPage />', () => {
     expect(screen.getByText('(0,0)')).toBeInTheDocument();
     expect(screen.getByText('Annuler le piège')).toBeInTheDocument();
 
-    await user.click(screen.getByTestId('3-0'));
+    await user.click(screen.getByTestId('close-trappopover'));
     expect(screen.queryByText('Case piégée')).not.toBeInTheDocument();
   });
 

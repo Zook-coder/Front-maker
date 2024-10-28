@@ -16,4 +16,5 @@ export const KNOWN_ERRORS: Record<string, string> = {
   NO_EVENT: "Désolé, il n'y a aucun évènement en cours",
   CANCEL_ON_COOLDOWN:
     'Vous devez attendre avant de pouvoir désactiver un piège',
+  WRONG_PASSWORD: 'Le mot de passe est incorrect',
 };

@@ -15,6 +15,20 @@ export const COIN_MOCK: Item = {
   currentCooldown: 30,
 };
 
+export const BOMB_MOCK: Item = {
+  type: 'BOMB',
+  name: 'Bomb',
+  description: 'A coin',
+  coords: { x: 0, y: 0 },
+  id: '10',
+  duration: 10,
+  durationLength: 10,
+  owner: {
+    ...PLAYER_MOCK,
+  },
+  currentCooldown: 30,
+};
+
 export const FREEZE_ITEM_MOCK: Item = {
   type: 'FREEZE',
   name: 'Gel',
