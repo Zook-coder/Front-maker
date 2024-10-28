@@ -1,7 +1,7 @@
-import { renderPage, user } from '@/testing/utils';
-import RandomNumberEventDialog from '..';
-import { screen } from '@testing-library/dom';
 import { RANDOM_NUMBER_EVENT_MOCK } from '@/testing/__fixtures__/event';
+import { renderPage, user } from '@/testing/utils';
+import { screen } from '@testing-library/dom';
+import RandomNumberEventDialog from '..';
 
 describe('<RandomNumberEventDrawer />', () => {
   it('should error if the submitted number is not a number', async () => {

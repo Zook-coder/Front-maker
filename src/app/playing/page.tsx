@@ -1,5 +1,17 @@
 'use client';
 import { tilesColor, TileType } from '@/api/colors';
+import { Item } from '@/api/item';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import {
@@ -18,6 +30,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Form, FormControl, FormField } from '@/components/ui/form';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import {
   Select,
   SelectContent,
@@ -34,34 +47,21 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet';
+import RandomNumberEventDialog from '@/events/RandomNumberEventDialog';
+import { toast } from '@/hooks/use-toast';
 import { useItemForm } from '@/hooks/useItemForm';
 import { convertElapsedTime } from '@/lib/utils';
+import BlindDialog from '@/playing/BlindDialog';
+import FinishedDialog from '@/playing/FinishedDialog';
+import HelpDialog from '@/playing/HelpDialog';
+import PlayerCard from '@/playing/PlayerCard';
+import ShopCard from '@/playing/ShopCard';
+import SpecialItemCard from '@/playing/SpecialItemCard';
 import SpellCard from '@/playing/SpellCard';
+import TrapPopover from '@/playing/TrapPopover';
 import { useWebSocket } from '@/websockets/WebSocketProvider';
 import { redirect } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
-import { Item } from '@/api/item';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
-import TrapPopover from '@/playing/TrapPopover';
-import HelpDialog from '@/playing/HelpDialog';
-import FinishedDialog from '@/playing/FinishedDialog';
-import { toast } from '@/hooks/use-toast';
-import PlayerCard from '@/playing/PlayerCard';
-import RandomNumberEventDialog from '@/events/RandomNumberEventDialog';
-import ShopCard from '@/playing/ShopCard';
-import SpecialItemCard from '@/playing/SpecialItemCard';
-import BlindDialog from '@/playing/BlindDialog';
-import { ScrollArea } from '@/components/ui/scroll-area';
 
 const DEFAULT_ITEM: Omit<Item, 'owner'> = {
   id: '1',
@@ -134,13 +134,15 @@ const PlayingPage = () => {
       setTarget({ x, y });
       return;
     }
-    if (openedPopover.some((item) => item.x == x && item.y == y)) {
-      setOpenedPopover((openedPopover) =>
-        openedPopover.filter((item) => item.x !== x && item.y !== y),
-      );
-    } else {
+    if (!openedPopover.some((item) => item.x == x && item.y == y)) {
       setOpenedPopover((openedPopover) => [...openedPopover, { x, y }]);
     }
+  };
+
+  const onClose = (x: number, y: number) => {
+    setOpenedPopover((openedPopover) =>
+      openedPopover.filter((item) => item.x !== x && item.y !== y),
+    );
   };
 
   const traps = gameState.items.reduce((traps, item) => {
@@ -323,11 +325,10 @@ const PlayingPage = () => {
                             name={traps[map.length - 1 - row][col].name}
                             duration={traps[map.length - 1 - row][col].duration}
                             owner={traps[map.length - 1 - row][col].owner}
+                            password={traps[map.length - 1 - row][col].password}
                             row={map.length - 1 - row}
                             col={col}
-                            onClose={() =>
-                              handleClick(map.length - 1 - row, col)
-                            }
+                            onClose={() => onClose(map.length - 1 - row, col)}
                           />
                         )}
                     </div>
@@ -424,6 +425,7 @@ const PlayingPage = () => {
                       {player?.items.map((item) => (
                         <>
                           <SelectItem
+                            key={item.id}
                             onClick={() => setSelectedItem(item)}
                             value={item.type}
                           >

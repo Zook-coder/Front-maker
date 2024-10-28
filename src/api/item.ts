@@ -1,6 +1,6 @@
 import { Player } from './player';
 
-export type ItemType = 'COIN' | 'FREEZE';
+export type ItemType = 'COIN' | 'FREEZE' | 'BOMB';
 
 export interface Item {
   id: string;
@@ -12,4 +12,5 @@ export interface Item {
   coords: { x: number; y: number };
   owner: Player;
   currentCooldown: number;
+  password?: string;
 }
