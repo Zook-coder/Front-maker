@@ -14,4 +14,6 @@ export const KNOWN_ERRORS: Record<string, string> = {
   UNKNOWN_ITEM: "L'item sélectionné n'existe pas.",
   NO_ENOUGH_CREDITS: "Tu n'as pas assez de crédits pour acheter cet item !",
   NO_EVENT: "Désolé, il n'y a aucun évènement en cours",
+  CANCEL_ON_COOLDOWN:
+    'Vous devez attendre avant de pouvoir désactiver un piège',
 };

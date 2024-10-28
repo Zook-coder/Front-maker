@@ -16,4 +16,5 @@ export interface Player {
   position?: { x: number; y: number };
   credits: number;
   blind?: boolean;
+  cancelCooldown?: number;
 }
