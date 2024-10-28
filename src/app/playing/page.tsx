@@ -203,8 +203,9 @@ const PlayingPage = () => {
                       <SheetHeader>
                         <SheetTitle>Manuel des sorts</SheetTitle>
                         <SheetDescription>
-                          Lorem ipsum dolor, sit amet consectetur adipisicing
-                          elit. Voluptate, laborum.
+                          Chaque sort déclenché affecte immédiatement le joueur
+                          en jeu et dispose d’un délai de récupération unique
+                          (cooldown).
                         </SheetDescription>
                       </SheetHeader>
                       <div className="flex flex-col mt-4">
@@ -231,7 +232,9 @@ const PlayingPage = () => {
                             <SheetHeader>
                               <SheetTitle>Items spéciaux</SheetTitle>
                               <SheetDescription>
-                                Lorem ipsum dolor sit amet.
+                                Les items spéciaux sont des objets rares,
+                                disponibles exclusivement en boutique, et
+                                utilisables une seule fois.
                               </SheetDescription>
                             </SheetHeader>
                             <div className="flex flex-col gap-2 mt-4">
@@ -341,7 +344,7 @@ const PlayingPage = () => {
             <CardHeader>
               <CardTitle className="text-xl">Statut de jeu</CardTitle>
               <CardDescription>
-                Lorem ipsum dolor sit amet consectetur.
+                Représentation globale de l{"'"}état de la partie.
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -378,9 +381,7 @@ const PlayingPage = () => {
           <Card>
             <CardHeader>
               <CardTitle className="text-xl">Joueurs connectés</CardTitle>
-              <CardDescription>
-                Lorem ipsum dolor sit amet consectetur.
-              </CardDescription>
+              <CardDescription>Ainsi que leurs équipes.</CardDescription>
             </CardHeader>
             <CardContent>
               <ScrollArea className="h-36">

@@ -19,7 +19,7 @@ const ShopCard = () => {
         <CardHeader>
           <CardTitle className="text-xl">Boutique</CardTitle>
           <CardDescription>
-            Lorem ipsum dolor sit amet consectetur.
+            Collection des items achetables en jeu.
           </CardDescription>
         </CardHeader>
         <CardContent>

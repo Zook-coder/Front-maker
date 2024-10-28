@@ -103,7 +103,7 @@ export default function Lobby() {
           <div className={`${players.length === 0 && 'pr-16'}`}>
             <CardHeader>
               <CardTitle>Joueur connectés</CardTitle>
-              <CardDescription>Lorem ipsum dolor sit amet.</CardDescription>
+              <CardDescription>Un joueur Unity est recommandé.</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="flex flex-col gap-4">
