@@ -15,7 +15,7 @@ describe('<PlayingPage />', () => {
     await user.click(screen.getByText('Compris !'));
     serverSocket.emit(
       'playerInfo',
-      JSON.stringify({ ...PLAYER_MOCK, role: 'Protector' }),
+      JSON.stringify({ ...PLAYER_MOCK, role: 'Protector', cancelCooldown: 10 }),
     );
 
     serverSocket.emit('newplayer', JSON.stringify([UNITY_PLAYER_MOCK]));
@@ -34,7 +34,7 @@ describe('<PlayingPage />', () => {
       expect(screen.getByText('00:00')).toBeInTheDocument();
 
       expect(screen.getByText('Annulation de piège dans')).toBeInTheDocument();
-      expect(screen.getByText('00:06')).toBeInTheDocument();
+      expect(screen.getByText('00:10')).toBeInTheDocument();
 
       expect(screen.getByText('Joueurs connectés')).toBeInTheDocument();
       expect(screen.getByText('D')).toBeInTheDocument();
