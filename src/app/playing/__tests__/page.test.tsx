@@ -201,7 +201,9 @@ describe('<PlayingPage />', () => {
     serverSocket.emit('map', JSON.stringify(MAP_MOCK));
 
     await waitFor(() => {
-      expect(screen.getByTestId('3-0')).toHaveStyle({ background: 'red' });
+      expect(screen.getByTestId('3-0')).toHaveStyle({
+        background: 'rgb(255, 239, 0)',
+      });
     });
   });
 
@@ -216,7 +218,9 @@ describe('<PlayingPage />', () => {
     serverSocket.emit('map', JSON.stringify(MAP_MOCK));
 
     await waitFor(() => {
-      expect(screen.getByTestId('3-0')).toHaveStyle({ background: 'red' });
+      expect(screen.getByTestId('3-0')).toHaveStyle({
+        background: 'rgb(255, 239, 0)',
+      });
     });
     await user.click(screen.getByTestId('3-0'));
 
@@ -249,7 +253,9 @@ describe('<PlayingPage />', () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByTestId('3-0')).toHaveStyle({ background: 'red' });
+      expect(screen.getByTestId('3-0')).toHaveStyle({
+        background: 'rgb(255, 239, 0)',
+      });
     });
     await user.click(screen.getByTestId('3-0'));
     expect(screen.getByText('Oops...')).toBeInTheDocument();
@@ -273,7 +279,9 @@ describe('<PlayingPage />', () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByTestId('3-0')).toHaveStyle({ background: 'red' });
+      expect(screen.getByTestId('3-0')).toHaveStyle({
+        background: 'rgb(255, 239, 0)',
+      });
     });
 
     await user.click(screen.getByTestId('3-0'));
@@ -281,6 +289,44 @@ describe('<PlayingPage />', () => {
     expect(screen.getByText('00:10')).toBeInTheDocument();
     expect(screen.getByText('Posé par')).toBeInTheDocument();
     expect(screen.getByText('John')).toBeInTheDocument();
+    expect(screen.getByText('Piège')).toBeInTheDocument();
+    expect(screen.getByText('Coin')).toBeInTheDocument();
+    expect(screen.getByText('Coordonnées')).toBeInTheDocument();
+    expect(screen.getByText('(0,0)')).toBeInTheDocument();
+    expect(screen.getByText('Annuler le piège')).toBeInTheDocument();
+
+    await user.click(screen.getByTestId('close-trappopover'));
+    expect(screen.queryByText('Case piégée')).not.toBeInTheDocument();
+  });
+
+  it('should open/close trap popover when clicking on a marked tile even if item has no owner', async () => {
+    renderPage(<PlayingPage />);
+    await user.click(screen.getByText('Compris !'));
+
+    serverSocket.emit(
+      'gamestate',
+      JSON.stringify({
+        ...GAME_STATE_MOCK,
+        items: [{ ...COIN_MOCK, owner: undefined }],
+      }),
+    );
+    serverSocket.emit('map', JSON.stringify(MAP_MOCK));
+    serverSocket.emit(
+      'playerInfo',
+      JSON.stringify({ ...PLAYER_MOCK, name: 'Dummy' }),
+    );
+
+    await waitFor(() => {
+      expect(screen.getByTestId('3-0')).toHaveStyle({
+        background: 'rgb(255, 239, 0)',
+      });
+    });
+
+    await user.click(screen.getByTestId('3-0'));
+    expect(screen.getByText('Case piégée')).toBeInTheDocument();
+    expect(screen.getByText('00:10')).toBeInTheDocument();
+    expect(screen.getByText('Posé par')).toBeInTheDocument();
+    expect(screen.getByText('Système')).toBeInTheDocument();
     expect(screen.getByText('Piège')).toBeInTheDocument();
     expect(screen.getByText('Coin')).toBeInTheDocument();
     expect(screen.getByText('Coordonnées')).toBeInTheDocument();
@@ -304,7 +350,9 @@ describe('<PlayingPage />', () => {
     serverSocket.emit('playerInfo', JSON.stringify(PLAYER_MOCK));
 
     await waitFor(() => {
-      expect(screen.getByTestId('3-0')).toHaveStyle({ background: 'red' });
+      expect(screen.getByTestId('3-0')).toHaveStyle({
+        background: 'rgb(255, 239, 0)',
+      });
     });
 
     await user.click(screen.getByTestId('3-0'));

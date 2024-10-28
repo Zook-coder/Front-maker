@@ -68,7 +68,9 @@ const TrapPopover = ({
             <div className="flex flex-col gap-2 w-full">
               <div className="flex items-center justify-between">
                 <span className="text-xs text-muted-foreground">Posé par</span>
-                <span className="text-xs font-medium">{owner.name}</span>
+                <span className="text-xs font-medium">
+                  {owner ? owner.name : 'Système'}
+                </span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-xs text-muted-foreground">Piège</span>
