@@ -278,14 +278,16 @@ const WebSocketProvider = ({ children }: PropsWithChildren) => {
     });
 
     socket.on('player:unity', (message) => {
-      const player: Player = JSON.parse(message);
-      setUnityPlayer({
-        ...player,
-        position: {
-          x: player.position?.y ?? 0,
-          y: player.position?.x ?? 0,
-        },
-      });
+      const unityPlayer: Player = JSON.parse(message);
+      if (unityPlayer.position) {
+        setUnityPlayer({
+          ...unityPlayer,
+          position: {
+            x: unityPlayer.position.y,
+            y: unityPlayer.position.x,
+          },
+        });
+      }
     });
 
     socket.on('newplayer', (message) => {
