@@ -7,16 +7,13 @@ import { z } from 'zod';
 export const useItemForm = () => {
   const { socket, player } = useWebSocket();
   const FormSchema = z.object({
-    item: z.string(),
+    item: z.string({ message: 'Requis' }),
   });
   const [target, setTarget] = useState<{ x: number; y: number }>();
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     mode: 'onChange',
-    defaultValues: {
-      item: 'COIN',
-    },
   });
 
   const onSubmit = ({ item }: z.infer<typeof FormSchema>) => {

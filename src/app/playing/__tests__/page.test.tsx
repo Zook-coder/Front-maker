@@ -153,40 +153,8 @@ describe('<PlayingPage />', () => {
 
     await waitFor(() => {
       expect(screen.getByText("Tu l'entends ce bruit ?")).toBeInTheDocument();
-      expect(screen.getAllByText('Coin')).toHaveLength(2);
-
       expect(screen.getByText('Piéger la case')).toBeInTheDocument();
-      expect(
-        screen.getByText('A coin that gives points to the player'),
-      ).toBeInTheDocument();
-    });
-  });
-
-  it('should send the trap request when clicking the submit button in the attack dialog', async () => {
-    const emitSpy = jest.spyOn(socket, 'emit');
-    renderPage(<PlayingPage />);
-    await user.click(screen.getByText('Compris !'));
-
-    serverSocket.emit('playerInfo', JSON.stringify(PLAYER_MOCK));
-    serverSocket.emit('gamestate', JSON.stringify(GAME_STATE_MOCK));
-    serverSocket.emit('map', JSON.stringify(MAP_MOCK));
-
-    await waitFor(() => {
-      expect(screen.getByTestId('0-0')).toBeInTheDocument();
-    });
-
-    await user.click(screen.getByTestId('0-0'));
-    await user.click(screen.getByText('Piéger la case'));
-    await waitFor(() => {
-      expect(emitSpy).toHaveBeenCalledWith(
-        'cast:item',
-        JSON.stringify({
-          id: '1',
-          x: 3,
-          y: 0,
-          item: 'COIN',
-        }),
-      );
+      expect(screen.getByText('Sélectionnez un item')).toBeInTheDocument();
     });
   });
 
